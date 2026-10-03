@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Chess Bharat — Chess, Reimagined</title>
+<meta name="description" content="Chess has existed for centuries, but it is still evolving. Scroll through the evolution of chess.">
+<meta name="theme-color" content="#04050a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050a'/%3E%3Cpath d='M32 10a9 9 0 0 1 5 16.5c3 1.7 4.5 4.6 4.5 8H46l3 13H15l3-13h4.500c0-3.400 1.500-6.300 4.500-8A9 9 0 0 1 32 10z' fill='%23ff9d2e'/%3E%3C/svg%3E">
+
+<style>
+/* ==========================================================================
+   CHESS BHARAT — "Evolution of Chess" scroll theme
+   Design tokens live on :root so the rest of the site can reuse them.
+   ========================================================================== */
+:root{
+  --bg:#04050a;
+  --ink:#eaf0fa;
+  --ink-dim:#9aa4b8;
+  --ink-faint:#5d667a;
+  --saffron:#ff9d2e;      /* the thread that runs from ancient to future */
+  --saffron-soft:#ffd08a;
+  --cyan:#4de8ff;
+  --violet:#8d7bff;
+  --line:rgba(255,255,255,.1);
+  --glass:rgba(8,12,22,.55);
+  --radius:14px;
+  --ff-display:"Cormorant Garamond","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --ff-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --ff-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --gutter:clamp(16px,4vw,48px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--ff-ui);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,.55) 100%)}
+.flash{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 50%,rgba(120,240,255,.35),transparent 60%)}
+.flash.go{animation:flash 1.4s ease-out}
+@keyframes flash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+
+/* ---------- header ---------- */
+.top{position:fixed;inset:0 0 auto 0;z-index:5;display:flex;align-items:center;justify-content:space-between;
+  padding:18px var(--gutter);pointer-events:none}
+.top>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--ff-mono);font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--ink)}
+.brand svg{width:22px;height:22px;fill:var(--saffron)}
+.brand b{font-weight:600;color:var(--saffron)}
+.nav{display:flex;gap:clamp(14px,2.4vw,34px);font-size:13px;letter-spacing:.06em;
+  opacity:0;transform:translateY(-10px);pointer-events:none;transition:opacity .9s ease,transform .9s ease}
+.nav a{color:var(--ink-dim);padding:6px 2px;position:relative;transition:color .25s}
+.nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--saffron);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.nav a:hover{color:var(--ink)}
+.nav a:hover::after{transform:scaleX(1)}
+body.is-ready .nav{opacity:1;transform:none;pointer-events:auto}
+.skip{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:5;font-family:var(--ff-mono);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-faint);padding:6px 12px;border:1px solid var(--line);border-radius:99px;background:rgba(0,0,0,.25);
+  backdrop-filter:blur(6px);transition:opacity .6s,color .2s}
+.skip:hover{color:var(--ink)}
+body.is-ready .skip{opacity:0;pointer-events:none}
+
+/* ---------- progress rail ---------- */
+.rail{position:fixed;right:var(--gutter);top:50%;transform:translateY(-50%);z-index:5;height:min(56vh,460px);width:56px;pointer-events:none;
+  transition:opacity .8s}
+body.is-ready .rail{opacity:0}
+.rail-track{position:absolute;right:6px;top:0;bottom:0;width:1px;background:var(--line)}
+.rail-fill{position:absolute;inset:0;background:linear-gradient(var(--saffron),var(--cyan));transform-origin:top;transform:scaleY(0)}
+.tick{position:absolute;right:2px;width:9px;height:1px;background:var(--ink-faint);transition:background .3s,width .3s}
+.tick.on{background:var(--saffron);width:13px}
+.tick span{position:absolute;right:18px;top:-6px;font:10px var(--ff-mono);letter-spacing:.1em;color:var(--ink-faint);opacity:0;transition:opacity .3s}
+.tick.cur span{opacity:1;color:var(--ink)}
+.readout{position:fixed;left:var(--gutter);bottom:26px;z-index:5;font-family:var(--ff-mono);pointer-events:none;transition:opacity .8s}
+body.is-ready .readout{opacity:0}
+.readout b{font-size:clamp(34px,5vw,56px);font-weight:300;letter-spacing:-.02em;color:var(--ink)}
+.readout i{font-style:normal;font-size:14px;color:var(--saffron);margin-left:3px}
+.readout em{display:block;margin-top:4px;font-style:normal;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-dim)}
+
+/* ---------- stage captions ---------- */
+.captions{position:fixed;left:var(--gutter);bottom:clamp(110px,18vh,170px);z-index:4;width:min(380px,calc(100vw - 2*var(--gutter) - 70px));pointer-events:none}
+.cap{position:absolute;left:0;bottom:0;opacity:0;will-change:opacity,transform}
+.cap .no{font:11px var(--ff-mono);letter-spacing:.3em;color:var(--saffron);display:block;margin-bottom:10px}
+.cap h2{font-family:var(--ff-display);font-weight:500;font-size:clamp(26px,3.4vw,40px);line-height:1.05;letter-spacing:-.01em;margin-bottom:10px;text-shadow:0 2px 24px rgba(0,0,0,.8)}
+.cap p{font-size:14.5px;line-height:1.55;color:var(--ink-dim);max-width:34ch;text-shadow:0 1px 14px rgba(0,0,0,.9)}
+
+/* ---------- opening hint ---------- */
+.hint{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:4;text-align:center;font:11px var(--ff-mono);letter-spacing:.38em;text-transform:uppercase;
+  color:var(--ink-faint);opacity:0;pointer-events:none;transition:opacity 1.2s}
+.hint.show{opacity:1}
+.hint::after{content:"";display:block;width:1px;height:38px;margin:14px auto 0;background:linear-gradient(var(--saffron),transparent);animation:drip 2.2s ease-in-out infinite;transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+
+/* ---------- final hero ---------- */
+.hero{position:fixed;inset:auto 0 clamp(18px,4vh,48px) 0;z-index:4;text-align:center;padding:0 var(--gutter);opacity:0;pointer-events:none}
+.hero.live{pointer-events:auto}
+.eyebrow{font:11px var(--ff-mono);letter-spacing:.34em;text-transform:uppercase;color:var(--saffron)}
+.hero h1{font-family:var(--ff-display);font-weight:400;font-size:clamp(40px,7vw,92px);line-height:.95;letter-spacing:-.025em;margin:10px 0 18px;
+  text-shadow:0 0 60px rgba(77,232,255,.25),0 4px 40px rgba(0,0,0,.9)}
+.hero h1 em{font-style:italic;color:var(--saffron-soft)}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{font-size:13px;letter-spacing:.08em;padding:12px 22px;border-radius:99px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(10px);transition:.25s}
+.btn:hover{border-color:var(--cyan);box-shadow:0 0 28px rgba(77,232,255,.25)}
+.btn.primary{background:var(--saffron);border-color:var(--saffron);color:#1a0e00;font-weight:600}
+.btn.primary:hover{box-shadow:0 0 34px rgba(255,157,46,.5)}
+
+/* ---------- scroll track + site ---------- */
+#journey{height:1100vh;height:1100svh}
+.site{position:relative;z-index:3;padding:34vh var(--gutter) 60px;
+  background:linear-gradient(180deg,rgba(3,5,10,0) 0,rgba(3,5,10,.78) 26vh,rgba(3,5,10,.94) 60vh)}
+.wrap{max-width:1180px;margin:0 auto}
+.sec{margin-bottom:96px}
+.sec-head{margin-bottom:30px}
+.sec-head h2{font-family:var(--ff-display);font-weight:400;font-size:clamp(32px,4.6vw,56px);letter-spacing:-.02em;margin-top:10px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{position:relative;padding:24px;border:1px solid var(--line);border-radius:var(--radius);background:var(--glass);backdrop-filter:blur(12px);overflow:hidden;
+  transition:transform .35s,border-color .35s;min-height:190px;display:flex;flex-direction:column;justify-content:flex-end}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,rgba(77,232,255,.14),transparent 55%);opacity:0;transition:opacity .4s}
+.card:hover{transform:translateY(-4px);border-color:rgba(77,232,255,.4)}
+.card:hover::before{opacity:1}
+.card .tag{font:10px var(--ff-mono);letter-spacing:.26em;text-transform:uppercase;color:var(--saffron);margin-bottom:12px}
+.card h3{font-family:var(--ff-display);font-weight:500;font-size:25px;line-height:1.15;margin-bottom:8px}
+.card p{font-size:13.5px;line-height:1.55;color:var(--ink-dim)}
+.steps .card{min-height:150px}
+.num{position:absolute;right:18px;top:12px;font:300 46px var(--ff-display);color:rgba(255,255,255,.07)}
+.foot{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font:11px var(--ff-mono);letter-spacing:.14em;color:var(--ink-faint)}
+
+.no-webgl #gl,.no-webgl .captions,.no-webgl .rail,.no-webgl .readout{display:none}
+.no-webgl body{background:radial-gradient(circle at 50% 30%,#14182a,#04050a 70%)}
+.no-webgl .hero{opacity:1;position:relative;padding-top:30vh;pointer-events:auto}
+@media (max-width:720px){.skip{left:auto;right:var(--gutter);transform:none}.nav{display:none}.rail{display:none}.captions{bottom:150px}}
+@media (prefers-reduced-motion:reduce){.hint::after{animation:none}.flash.go{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vignette"></div>
+<div class="flash" id="flash"></div>
+
+<header class="top">
+  <a class="brand" href="#" aria-label="Chess Bharat home">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8a10 10 0 0 1 5.500 18.300c3.200 1.800 4.800 4.800 4.800 8.500H47l3.200 14.200H13.800L17 34.800h4.700c0-3.700 1.600-6.700 4.800-8.500A10 10 0 0 1 32 8z"/></svg>
+    <span><b>Chess</b> Bharat</span>
+  </a>
+  <nav class="nav" aria-label="Primary">
+    <a href="#news">News</a><a href="#players">Players</a><a href="#learn">Learn</a><a href="#tournaments">Tournaments</a><a href="#about">About</a>
+  </nav>
+</header>
+<a class="skip" href="#site" id="skip">Skip intro</a>
+
+<aside class="rail" id="rail" aria-hidden="true"><div class="rail-track"><i class="rail-fill" id="railFill"></i></div></aside>
+<div class="readout" aria-hidden="true"><b id="pct">000</b><i>%</i><em id="era">Ancient pawn</em></div>
+
+<div class="captions" id="caps" aria-live="polite">
+  <article class="cap" data-at="0"><span class="no">00 — The Beginning</span><h2>Ancient. Mysterious. Timeless.</h2><p>One pawn, one candle of light. Chess begins the way it always has.</p></article>
+  <article class="cap" data-at="0.1"><span class="no">10 — The First Movement</span><h2>The old world is beginning to change.</h2><p>Hidden lines wake beneath the board. Something stirs inside the wood.</p></article>
+  <article class="cap" data-at="0.2"><span class="no">20 — Tradition Meets Technology</span><h2>The ancient form is being rebuilt.</h2><p>Squares turn to geometry. Light begins to travel through the grid.</p></article>
+  <article class="cap" data-at="0.3"><span class="no">30 — The Digital Chessboard</span><h2>Chess has entered the digital age.</h2><p>The board glows, extends past the horizon and the other pieces appear.</p></article>
+  <article class="cap" data-at="0.4"><span class="no">40 — The Transformation Accelerates</span><h2>Chess is becoming a system.</h2><p>No longer just a physical game. Half wood, half circuitry, still unmistakably a pawn.</p></article>
+  <article class="cap" data-at="0.5"><span class="no">50 — The Turning Point</span><h2>The foundation of a new world.</h2><p>A pulse crosses the board. Each square becomes a city.</p></article>
+  <article class="cap" data-at="0.6"><span class="no">60 — Chess as Intelligence</span><h2>Strategy. Calculation. Decision.</h2><p>Every move ripples through a network of possibilities.</p></article>
+  <article class="cap" data-at="0.7"><span class="no">70 — The Future of Chess</span><h2>Chess, beyond the present.</h2><p>The physical world is almost gone. The silhouette remains.</p></article>
+  <article class="cap" data-at="0.8"><span class="no">80 — Beyond the Board</span><h2>Chess has transcended the physical board.</h2><p>Many boards, many dimensions, one game moving between them.</p></article>
+  <article class="cap" data-at="0.9"><span class="no">90 — The Infinite Game</span><h2>Not a board. Not a room. An idea.</h2><p>Light flows through an endless network, and at its centre, the pawn.</p></article>
+</div>
+
+<div class="hint" id="hint">Scroll to evolve</div>
+
+<div class="hero" id="hero">
+  <p class="eyebrow">From the first move to the next frontier</p>
+  <h1>Chess, <em>Reimagined.</em></h1>
+  <div class="cta"><a class="btn primary" href="#site">Enter Chess Bharat</a><a class="btn" href="#learn">Learn the game</a></div>
+</div>
+
+<main>
+  <div id="journey" aria-hidden="true"></div>
+
+  <!-- Placeholder site content: replace with real Chess Bharat sections. -->
+  <section class="site" id="site">
+    <div class="wrap">
+      <div class="sec" id="news">
+        <div class="sec-head"><span class="eyebrow">Latest</span><h2>From the board</h2></div>
+        <div class="grid">
+          <a class="card" href="#"><span class="tag">News</span><h3>Headline goes here</h3><p>A short, sharp summary of the story sits underneath the title.</p></a>
+          <a class="card" href="#"><span class="tag">History</span><h3>Where chess began</h3><p>Chaturanga to chess: the long road of the game from India to the world.</p></a>
+          <a class="card" href="#"><span class="tag">Opinion</span><h3>The next frontier</h3><p>What the next decade of chess could look like, on and off the board.</p></a>
+        </div>
+      </div>
+      <div class="sec" id="players">
+        <div class="sec-head"><span class="eyebrow">People</span><h2>Players to watch</h2></div>
+        <div class="grid">
+          <a class="card" href="#"><span class="tag">Profile</span><h3>Player name</h3><p>Rating, style and the story behind the rise.</p></a>
+          <a class="card" href="#"><span class="tag">Profile</span><h3>Player name</h3><p>Rating, style and the story behind the rise.</p></a>
+          <a class="card" href="#"><span class="tag">Profile</span><h3>Player name</h3><p>Rating, style and the story behind the rise.</p></a>
+        </div>
+      </div>
+      <div class="sec" id="learn">
+        <div class="sec-head"><span class="eyebrow">Learn</span><h2>Start your first move</h2></div>
+        <div class="grid steps">
+          <a class="card" href="#"><span class="num">01</span><h3>The pieces</h3><p>How every piece moves, and why.</p></a>
+          <a class="card" href="#"><span class="num">02</span><h3>Openings</h3><p>Ideas, not memorisation.</p></a>
+          <a class="card" href="#"><span class="num">03</span><h3>Tactics</h3><p>See it, calculate it, play it.</p></a>
+          <a class="card" href="#"><span class="num">04</span><h3>Endgames</h3><p>Where games are quietly won.</p></a>
+        </div>
+      </div>
+      <div class="sec" id="tournaments">
+        <div class="sec-head"><span class="eyebrow">Calendar</span><h2>Tournaments</h2></div>
+        <div class="grid">
+          <a class="card" href="#"><span class="tag">Upcoming</span><h3>Event name</h3><p>Dates, venue and format.</p></a>
+          <a class="card" href="#"><span class="tag">Upcoming</span><h3>Event name</h3><p>Dates, venue and format.</p></a>
+        </div>
+      </div>
+      <div class="sec" id="about"><div class="sec-head"><span class="eyebrow">About</span><h2>Chess has existed for centuries, but it is still evolving.</h2></div></div>
+      <div class="foot"><span>© Chess Bharat</span><span>The form may change. The game survives.</span></div>
+    </div>
+  </section>
+</main>
+
+<noscript><style>.hero{opacity:1!important;position:relative!important;padding-top:30vh}.rail,.readout,.captions{display:none}</style></noscript>
+
+<script src="vendor/three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"><\/script>')</script>
+<script>
+/* ==========================================================================
+   Evolution of Chess — one continuous, scroll-driven scene.
+   Everything below reads a single number: P = scroll progress, 0..1.
+   Nothing is switched on/off at a milestone; every system fades with smoothstep.
+   Debug: append ?p=0.5 to freeze progress (e.g. ?p=0.8&pulse=1).
+   ========================================================================== */
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const sstep=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t)};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const qs=new URLSearchParams(location.search);
+const DEBUG_P=qs.has('p')?clamp(parseFloat(qs.get('p'))||0):null;
+
+if(!window.THREE){document.documentElement.classList.add('no-webgl');return}
+const THREE=window.THREE;
+const canvas=$('#gl');
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'})}
+catch(e){document.documentElement.classList.add('no-webgl');return}
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(38,1,.05,4000);
+
+/* mulberry32 so the world is identical on every load */
+let _s=20240917;const rnd=()=>{_s|=0;_s=_s+0x6D2B79F5|0;let t=Math.imul(_s^_s>>>15,1|_s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+
+/* ------------------------------------------------------------------ uniforms */
+const U={
+  uTime:{value:0},uP:{value:0},uIntro:{value:0},uBreak:{value:0},
+  uPulseR:{value:0},uPulseA:{value:0},uQuiet:{value:1},
+  uFogColor:{value:new THREE.Color(0x000000)},uFogDens:{value:.012},
+  uCore:{value:new THREE.Color(1,.62,.22)},uPx:{value:600},
+  uBuild:{value:0},uPieceVis:{value:0},
+  uPings:{value:[new THREE.Vector4(0,0,0,-1),new THREE.Vector4(0,0,0,-1),new THREE.Vector4(0,0,0,-1),new THREE.Vector4(0,0,0,-1)]}
+};
+let pingPtr=0;
+const addPing=(x,y,z)=>{U.uPings.value[pingPtr].set(x,y,z,0);pingPtr=(pingPtr+1)%4};
+
+/* ------------------------------------------------------------------ GLSL */
+const COMMON=`
+float h11(float p){p=fract(p*.1031);p*=p+33.33;p*=p+p;return fract(p);}
+float h21(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
+float h31(vec3 p){p=fract(p*.1031);p+=dot(p,p.zyx+31.32);return fract((p.x+p.y)*p.z);}
+float vn(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
+  float a=h31(i),b=h31(i+vec3(1.,0.,0.)),c=h31(i+vec3(0.,1.,0.)),d=h31(i+vec3(1.,1.,0.));
+  float e=h31(i+vec3(0.,0.,1.)),g=h31(i+vec3(1.,0.,1.)),h=h31(i+vec3(0.,1.,1.)),k=h31(i+vec3(1.,1.,1.));
+  return mix(mix(mix(a,b,f.x),mix(c,d,f.x),f.y),mix(mix(e,g,f.x),mix(h,k,f.x),f.y),f.z);}
+float fbm(vec3 p){float a=.5,s=0.;for(int i=0;i<4;i++){s+=a*vn(p);p=p*2.03+vec3(7.1,3.7,5.3);a*=.5;}return s;}
+vec3 tm(vec3 c){return 1.-exp(-c*1.5);}
+`;
+
+/* ----- pawn body: wood -> metal -> circuitry -> glass -> hologram -> symbol ----- */
+const PAWN_V=`varying vec3 vObj;varying vec3 vN;varying vec3 vW;
+void main(){vObj=position;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`;
+const PAWN_F=COMMON+`
+uniform float uTime,uP,uBreak,uIntro;uniform vec3 uCore;
+varying vec3 vObj;varying vec3 vN;varying vec3 vW;
+float band(float y,float c,float w){return 1.-smoothstep(w*.35,w,abs(y-c));}
+void main(){
+  float p=uP;
+  vec3 N=normalize(vN);vec3 V=normalize(cameraPosition-vW);
+  if(!gl_FrontFacing)N=-N;
+  float ndv=clamp(dot(N,V),0.,1.);
+  float fres=pow(1.-ndv,3.);
+  vec3 L=normalize(vec3(.35,1.,.55));vec3 L2=normalize(vec3(-.8,.25,-.6));vec3 H=normalize(L+V);
+  float dif=max(dot(N,L),0.);float dif2=max(dot(N,L2),0.);
+  float y=vObj.y;float th=atan(vObj.z,vObj.x);
+
+  /* dissolve (80% particle break) */
+  float dn=fbm(vObj*4.+vec3(0.,uTime*.2,0.));
+  float thr=uBreak*1.2-.12;
+  if(dn<thr)discard;
+  float dEdge=uBreak>.001?1.-smoothstep(thr,thr+.09,dn):0.;
+
+  /* aged wood */
+  float smoothW=smoothstep(.1,.38,p);
+  float gr=fbm(vec3(vObj.x*8.,y*1.4,vObj.z*8.));
+  gr=mix(gr,.5,smoothW*.7);
+  vec3 wood=mix(vec3(.05,.03,.02),vec3(.22,.13,.07),gr);
+  float wear=smoothstep(.55,.8,fbm(vObj*7.+3.))*(1.-smoothW);
+  wood=mix(wood,vec3(.28,.22,.17),wear*.5);
+  float spW=mix(26.,140.,smoothW);
+  vec3 woodLit=wood*(.16+dif*1.5*vec3(1.,.82,.6)+dif2*.12*vec3(.5,.6,1.))
+              +vec3(1.,.85,.6)*pow(max(dot(N,H),0.),spW)*mix(.05,.5,smoothW);
+
+  /* glowing cracks + faint inner glow (10-20%) */
+  float cr=abs(fbm(vObj*vec3(5.,3.,5.)+3.)-.47);
+  float crack=1.-smoothstep(0.,.009,cr);
+  float crackW=smoothstep(.05,.13,p)*(1.-smoothstep(.3,.5,p));
+  vec3 emis=vec3(1.,.55,.18)*crack*crackW*.55*(.7+.3*sin(uTime*1.5+y*4.));
+  emis+=uCore*smoothstep(.05,.2,p)*(.05+.22*fres)*(1.-smoothstep(.55,.8,p));
+
+  /* metal: inlay bands first, then patches that spread */
+  float inl=band(y,.2,.018)+band(y,1.24,.014)+band(y,1.46,.012)+band(y,2.02,.014)+band(y,.62,.01);
+  inl=clamp(inl,0.,1.)*smoothstep(.06,.18,p);
+  float mn=fbm(vObj*vec3(2.6,2.2,2.6)+9.);
+  float fm=1.25*smoothstep(.12,.7,p);
+  float pat=smoothstep(0.,.07,fm-(1.-mn)*1.1);
+  float metal=max(inl,pat);
+  vec3 R=reflect(-V,N);
+  float env=smoothstep(-.3,.9,R.y);
+  vec3 mcol=mix(vec3(.02,.022,.03),vec3(.5,.58,.72),env);
+  mcol+=pow(max(dot(R,L),0.),22.)*vec3(1.,.9,.72)*1.6;
+  mcol+=pow(max(dot(R,L2),0.),7.)*vec3(.15,.45,.7)*.55;
+  mcol*=.8+.35*vn(vec3(th*18.,y*70.,0.));
+  mcol*=mix(vec3(1.,.74,.5),vec3(.82,.92,1.),smoothstep(.1,.5,p));
+  vec3 col=mix(woodLit,mcol,metal);
+
+  /* circuitry (25-75%) */
+  vec2 uv=vec2(th/6.28318*28.,y*14.);vec2 cell=floor(uv);cell.x=mod(cell.x,28.);vec2 fc=fract(uv);
+  float hh=h21(cell);
+  float lh=step(abs(fc.y-.5),.05)*step(hh,.55);
+  float lv=step(abs(fc.x-.5),.05)*step(.4,hh);
+  float nd=(1.-smoothstep(.13,.2,length(fc-.5)))*step(.72,hh);
+  float circ=clamp(lh+lv+nd,0.,1.)*step(.22,h21(cell+7.3));
+  float pulse=pow(.5+.5*sin(uTime*2.6-y*5.+hh*30.),6.);
+  float cW=smoothstep(.22,.4,p)*(1.-smoothstep(.62,.8,p));
+  emis+=uCore*circ*(.35+1.5*pulse)*cW*(.35+.65*metal);
+
+  /* computational patterns (55%+) */
+  vec2 uv2=vec2(th/6.28318*18.,y*9.);vec2 c2=floor(uv2);c2.x=mod(c2.x,18.);vec2 f2=fract(uv2);
+  if(h21(c2+3.1)>.5)f2.x=1.-f2.x;
+  float dd=min(abs(length(f2)-.5),abs(length(f2-1.)-.5));
+  float tru=1.-smoothstep(.03,.07,dd);
+  float tW=smoothstep(.5,.68,p);
+  float tp=pow(.5+.5*sin(uTime*2.+(c2.x+c2.y)*.7),4.);
+  emis+=uCore*tru*(.4+1.2*tp)*tW;
+
+  /* translucent sections (30-65%) */
+  float gn=fbm(vObj*vec3(3.,2.5,3.)+21.);
+  float gS=smoothstep(.3,.45,p)*(1.-smoothstep(.55,.7,p));
+  float gls=smoothstep(0.,.07,gn-mix(1.2,.56,smoothstep(.28,.5,p)))*gS;
+  col=mix(col,vec3(.03,.08,.11)+uCore*.35*(.3+fres),gls);
+
+  /* hologram / energy (50-80%) */
+  float hW=smoothstep(.5,.8,p);
+  float scan=.5+.5*sin(y*80.-uTime*3.);
+  vec3 holo=uCore*(.1+1.1*fres)+uCore*scan*.12+vec3(.02,.05,.08)+vec3(.8,.95,1.)*pow(fres,4.)*.6;
+  col=mix(col,holo,hW);
+
+  /* the final symbol (88-100%) */
+  float sW=smoothstep(.88,1.,p);
+  vec3 sym=mix(vec3(1.,.74,.32),vec3(.55,.95,1.),ndv)*(.14+.9*fres)+vec3(.9,.97,1.)*pow(fres,5.);
+  col=mix(col,sym,sW);
+  col+=emis*(1.-sW*.4);
+  col+=uCore*dEdge*2.5;
+
+  float a=1.;
+  a=mix(a,.2+.5*fres,gls);
+  a=mix(a,.34+.62*fres,hW);
+  a=mix(a,.58+.42*fres,sW);
+  a*=uIntro;
+  gl_FragColor=vec4(tm(col),a);
+}`;
+
+const CORE_F=`uniform float uVis,uTime;uniform vec3 uCore;varying vec3 vN;varying vec3 vW;
+void main(){vec3 V=normalize(cameraPosition-vW);float ndv=abs(dot(normalize(vN),V));
+ float pl=.75+.25*sin(uTime*2.2);
+ vec3 c=uCore*(.55+1.1*pow(ndv,2.))*pl;gl_FragColor=vec4(c,uVis);}`;
+
+const RING_V=`varying vec3 vN;varying vec3 vW;varying vec2 vUv;
+void main(){vUv=uv;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`;
+const RING_F=COMMON+`uniform float uVis,uTime;uniform vec3 uCore;varying vec3 vN;varying vec3 vW;varying vec2 vUv;
+void main(){
+ vec3 N=normalize(vN);vec3 V=normalize(cameraPosition-vW);if(!gl_FrontFacing)N=-N;
+ float fres=pow(1.-clamp(dot(N,V),0.,1.),2.);
+ vec3 R=reflect(-V,N);vec3 L=normalize(vec3(.35,1.,.55));
+ vec3 c=mix(vec3(.03,.035,.05),vec3(.55,.66,.85),smoothstep(-.2,.9,R.y))+pow(max(dot(R,L),0.),20.)*1.4;
+ float e=min(vUv.y,1.-vUv.y);float ln=1.-smoothstep(0.,.14,e);
+ float pl=pow(.5+.5*sin(uTime*3.-vUv.x*18.),5.);
+ c+=uCore*ln*(.9+1.6*pl)+uCore*fres*.5;
+ gl_FragColor=vec4(tm(c),uVis*(.65+.35*fres));}`;
+
+/* ----- board: stone -> old chessboard -> luminous grid -> digital panels ----- */
+const BOARD_V=`varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`;
+const BOARD_F=COMMON+`
+uniform float uTime,uP,uIntro,uPulseR,uPulseA,uFogDens,uQuiet;uniform vec3 uFogColor;uniform vec4 uPings[4];
+varying vec3 vW;
+void main(){
+  float p=uP;float S=1.6;
+  vec2 w=vW.xz;vec2 g=w/S;vec2 id=floor(g+.5);vec2 f=g-id;
+  float dist=length(w);
+  float chk=mod(id.x+id.y,2.);
+  float edge=max(abs(f.x),abs(f.y));
+  float R=2.8*pow(150.,smoothstep(.04,.42,p));
+  float mask=1.-smoothstep(R*.3,R,dist);
+  float pool=exp(-dist*dist/(4.5+14.*smoothstep(0.,.25,p)));
+
+  /* ancient board */
+  float aW=smoothstep(.04,.16,p);
+  float cleanW=smoothstep(.14,.34,p);
+  vec3 stone=vec3(.032,.028,.025)*(.5+1.1*fbm(vec3(w*2.2,1.)));
+  vec3 sqc=mix(vec3(.028,.018,.012),vec3(.13,.082,.05),chk)*(.55+.9*fbm(vec3(w*vec2(1.2,5.),2.)));
+  sqc*=1.-.5*smoothstep(.46,.5,edge);
+  sqc=mix(sqc,mix(vec3(.02,.025,.04),vec3(.055,.075,.11),chk),cleanW);
+  vec3 anc=mix(stone,sqc,aW);
+  vec3 col=anc*(pool*1.7*vec3(1.,.8,.55)+.05)*mix(1.,.8,cleanW);
+
+  /* hidden geometry, cracks, luminous lines with travelling particles */
+  float bl=1.-smoothstep(0.,.035,.5-edge);
+  float dl=(1.-smoothstep(0.,.03,abs(abs(f.x)-abs(f.y))))*.4;
+  vec3 lineCol=mix(vec3(1.,.6,.22),vec3(.3,.9,1.),smoothstep(.15,.4,p));
+  float geo=(bl+dl)*smoothstep(.06,.18,p)*.22;
+  float lw=smoothstep(.14,.3,p);
+  float tp=pow(.5+.5*sin(dot(g,vec2(1.,1.))*3.5-uTime*2.5+h21(id)*6.28),10.);
+  float lineGlow=bl*lw*(.35+1.8*tp)*mask;
+  float cr=abs(fbm(vec3(w*.9,1.))-.47);
+  float crack=(1.-smoothstep(0.,.008,cr))*smoothstep(.06,.13,p)*(1.-smoothstep(.28,.45,p))*mask;
+  col+=vec3(1.,.5,.15)*crack*.8*(.6+.4*pool);
+  col+=lineCol*(geo*mask+lineGlow);
+
+  /* digital panels */
+  float pW=smoothstep(.24,.5,p);
+  vec2 q=g-vec2(.5);
+  float bd=max(abs(q.x),abs(q.y));
+  float inB=1.-step(4.,bd);
+  float panel=1.-smoothstep(.43,.46,edge);
+  float shim=vn(vec3(id*.4,uTime*.35));
+  vec3 pLight=vec3(.03,.1,.15)+vec3(.1,.5,.7)*(.18+.5*shim);
+  vec3 pDark=vec3(.012,.016,.035)+vec3(.35,.25,.8)*.1*shim;
+  vec3 pc=mix(pDark,pLight,chk)*panel;
+  pc*=mix(.45,1.,inB);
+  pc*=.35+pool*1.4+.5*mask;
+  col=mix(col,pc+col*.3,pW);
+  float bev=smoothstep(.43,.46,edge)*(1.-smoothstep(.485,.5,edge));
+  col+=lineCol*bev*pW*(.15+.5*tp)*mix(.5,1.,inB)*mask;
+  float rim=1.-smoothstep(0.,.09,abs(bd-4.));
+  col+=vec3(1.,.66,.25)*rim*smoothstep(.28,.45,p)*.9*mask;
+
+  /* the turning-point pulse + piece pings */
+  float ring=exp(-pow((dist-uPulseR)/(1.4+uPulseR*.05),2.))*uPulseA;
+  col+=vec3(.5,.95,1.)*ring*(.9+2.*(panel*pW+bl*lw));
+  float rp=0.;
+  for(int i=0;i<4;i++){vec4 pg=uPings[i];if(pg.w>=0.){rp+=exp(-pow((distance(w,pg.xz)-pg.w*13.)/1.3,2.))*exp(-pg.w*.9);}}
+  col+=vec3(.4,.9,1.)*rp*(.5*panel*pW+.8*bl)*pW;
+
+  float fade=1.-.9*smoothstep(.76,.9,p);
+  col*=uIntro*uQuiet;
+  float cd=length(cameraPosition-vW);
+  col=mix(col,uFogColor,1.-exp(-cd*uFogDens));
+  gl_FragColor=vec4(tm(col),mask*fade);
+}`;
+
+/* ----- city buildings rising from squares ----- */
+const BLD_V=`attribute vec3 aPos;attribute vec3 aSize;uniform float uBuild;
+varying vec3 vW;varying vec3 vN;varying vec3 vSize;varying vec3 vPos0;varying vec2 vUv;varying float vGrow;
+void main(){
+  float d=length(aPos.xz);
+  float local=clamp(uBuild*1.7-d*.016-aSize.z*.25,0.,1.);
+  float grow=1.-pow(1.-local,3.);
+  grow*=smoothstep(12.,26.,length(aPos.xz-cameraPosition.xz));
+  vec3 pos=position;pos.xz*=aSize.x;pos.y*=aSize.y*grow;
+  vec3 wp=pos+aPos;
+  vW=wp;vN=normal;vSize=aSize;vPos0=aPos;vUv=uv;vGrow=grow;
+  gl_Position=projectionMatrix*viewMatrix*vec4(wp,1.);}`;
+const BLD_F=COMMON+`uniform float uTime,uP,uPulseR,uPulseA,uQuiet,uFogDens;uniform vec3 uFogColor;
+varying vec3 vW;varying vec3 vN;varying vec3 vSize;varying vec3 vPos0;varying vec2 vUv;varying float vGrow;
+void main(){
+  if(vGrow<.02)discard;
+  float p=uP;float seed=vSize.z;
+  vec3 acc=seed>.9?vec3(1.,.62,.2):(seed>.45?vec3(.3,.88,1.):vec3(.58,.45,1.));
+  bool top=vN.y>.5;
+  float hgt=vSize.y*vGrow;float wy=vW.y;
+  vec2 wc=vec2(floor(vUv.x*5.+seed*37.),floor(wy*1.7));
+  vec2 wf=vec2(fract(vUv.x*5.),fract(wy*1.7));
+  float wnd=step(.2,wf.x)*step(wf.x,.8)*step(.25,wf.y)*step(wf.y,.75)*step(.55,h21(wc+seed*91.));
+  wnd*=top?0.:1.;
+  wnd*=.55+.45*sin(uTime*(.5+seed)+h21(wc)*20.);
+  float duw=min(vUv.x,1.-vUv.x)*vSize.x;
+  float ed=max(1.-smoothstep(0.,.05,duw),1.-smoothstep(0.,.12,hgt-wy));
+  ed*=step(.001,vGrow);
+  float ring=exp(-pow((length(vPos0.xz)-uPulseR)/3.,2.))*uPulseA;
+  vec3 body=vec3(.012,.016,.03)+acc*.02*(wy/max(hgt,.1));
+  if(top)body+=acc*.06;
+  vec3 em=acc*(wnd*.9+ed*.8*(.5+.5*sin(uTime+seed*40.))+(top?.12:0.))+vec3(.5,.9,1.)*ring*2.;
+  float fill=1.-smoothstep(.5,.78,p);
+  float master=1.-.9*smoothstep(.78,.93,p);
+  float dth=h21(gl_FragCoord.xy);
+  float keepFill=step(dth,fill)*step(dth,master);
+  float emv=clamp(wnd+ed+ring,0.,1.);
+  float keepEm=step(.3,emv)*step(dth,master+.1);
+  if(keepFill<.5&&keepEm<.5)discard;
+  vec3 col=(keepFill>.5?body:vec3(0.))+em*uQuiet;
+  float cd=length(cameraPosition-vW);
+  col=mix(col,uFogColor,1.-exp(-cd*uFogDens));
+  gl_FragColor=vec4(tm(col),1.);
+}`;
+
+/* ----- translucent floating pieces ----- */
+const PIECE_V=`varying vec3 vN;varying vec3 vW;varying vec3 vObj;
+void main(){vObj=position;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`;
+const PIECE_F=`uniform float uTime,uVis,uFogDens;uniform vec3 uTint;varying vec3 vN;varying vec3 vW;varying vec3 vObj;
+void main(){
+ vec3 N=normalize(vN);vec3 V=normalize(cameraPosition-vW);float ndv=abs(dot(N,V));
+ float fres=pow(1.-ndv,2.);
+ float scan=.5+.5*sin(vW.y*26.-uTime*2.);
+ vec3 c=uTint*(.1+.55*fres+.1*scan)+vec3(.9,.97,1.)*pow(fres,4.)*.5;
+ c+=uTint*.25*smoothstep(0.,2.,vObj.y);
+ float cd=length(cameraPosition-vW);
+ gl_FragColor=vec4(c,uVis*(.28+.7*fres)*exp(-cd*uFogDens*.6));}`;
+
+/* ----- flowing lines (network / paths / decision trees) ----- */
+const FLOW_V=`attribute float aT;attribute float aPhase;varying float vT;varying float vPh;varying vec3 vWp;varying float vDist;
+void main(){vT=aT;vPh=aPhase;vec4 w=modelMatrix*vec4(position,1.);vWp=w.xyz;vec4 mv=viewMatrix*w;vDist=-mv.z;gl_Position=projectionMatrix*mv;}`;
+const FLOW_F=`uniform float uTime,uVis,uSpeed,uFogDens;uniform vec3 uColA,uColB;uniform vec4 uPings[4];
+varying float vT;varying float vPh;varying vec3 vWp;varying float vDist;
+void main(){
+ float sh=fract(uTime*uSpeed+vPh);
+ float pulse=exp(-pow((vT-sh)*4.5,2.)*3.);
+ float ping=0.;
+ for(int i=0;i<4;i++){vec4 pg=uPings[i];if(pg.w>=0.){ping+=exp(-pow((distance(vWp,pg.xyz)-pg.w*13.)/2.2,2.))*exp(-pg.w*.9);}}
+ vec3 c=mix(uColA,uColB,vPh)*(.25+pulse*1.6)+vec3(.6,.95,1.)*ping*1.4;
+ float a=(.16+pulse*.8+ping*.8)*uVis*exp(-vDist*uFogDens*.7);
+ gl_FragColor=vec4(c,a);}`;
+
+/* ----- glowing points (network nodes, far stars) ----- */
+const PTS_V=`attribute float aSize;attribute float aSeed;uniform float uPx;varying float vS;varying float vDist;
+void main(){vS=aSeed;vec4 mv=modelViewMatrix*vec4(position,1.);vDist=-mv.z;gl_Position=projectionMatrix*mv;gl_PointSize=clamp(aSize*uPx/-mv.z,1.5,48.);}`;
+const PTS_F=`uniform float uTime,uVis,uFogDens;uniform vec3 uCol;varying float vS;varying float vDist;
+void main(){float d=length(gl_PointCoord-.5);float a=1.-smoothstep(0.,.5,d);a*=a;
+ float tw=.6+.4*sin(uTime*2.+vS*30.);
+ vec3 c=mix(uCol,vec3(1.,.8,.5),step(.93,fract(vS*7.31)));
+ gl_FragColor=vec4(c,a*tw*uVis*exp(-vDist*uFogDens));}`;
+
+/* ----- dust, data streams, particle swarm, trail ----- */
+const DUST_V=`attribute vec4 aR;uniform float uTime,uPx;varying float vA;
+void main(){vec3 p=position;
+ p.x+=sin(uTime*.2*(.5+aR.w)+aR.x*10.)*.4;p.z+=cos(uTime*.17*(.5+aR.w)+aR.y*10.)*.4;
+ p.y=mod(p.y+uTime*(.03+.05*aR.z),5.5);
+ vA=.4+.6*sin(uTime*.8+aR.x*40.);
+ vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=max(1.2,(.02+aR.z*.03)*uPx/-mv.z);}`;
+const DUST_F=`uniform float uVis;uniform vec3 uCol;varying float vA;
+void main(){float d=length(gl_PointCoord-.5);float a=1.-smoothstep(0.,.5,d);gl_FragColor=vec4(uCol,a*a*vA*uVis*.8);}`;
+
+const STREAM_V=`attribute vec4 aR;uniform float uTime,uPx;varying float vA;
+void main(){vec3 p=position;p.y=mod(p.y-uTime*(1.5+aR.x*3.),26.);
+ vA=sin(3.14159*p.y/26.)*(.4+.6*aR.y);
+ vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=clamp((.06+aR.z*.08)*uPx/-mv.z,1.2,14.);}`;
+const STREAM_F=`uniform float uVis;uniform vec3 uCol;varying float vA;
+void main(){float d=length(gl_PointCoord-.5);float a=1.-smoothstep(0.,.5,d);gl_FragColor=vec4(uCol,a*vA*uVis);}`;
+
+const SWARM_V=`attribute vec4 aR;uniform float uTime,uBreak,uPx,uScale;varying float vA;
+void main(){
+ float b=clamp(uBreak*1.7-aR.w*.7,0.,1.);b=b*b*(3.-2.*b);
+ float ang=aR.y*6.2832+uTime*(.5+aR.z*1.1)*(aR.w>.5?1.:-1.);
+ float rad=.9+aR.x*2.3;
+ vec3 orb=vec3(cos(ang)*rad,.1+aR.z*2.3+sin(uTime*1.3+aR.x*9.)*.25,sin(ang)*rad);
+ vec3 pos=mix(position,orb,b);
+ vA=smoothstep(.01,.2,uBreak);
+ vec4 mv=modelViewMatrix*vec4(pos,1.);gl_Position=projectionMatrix*mv;
+ gl_PointSize=clamp((.035+aR.z*.05)*uScale*uPx/-mv.z,1.5,22.);}`;
+const SWARM_F=`uniform vec3 uCol;varying float vA;
+void main(){float d=length(gl_PointCoord-.5);float a=1.-smoothstep(0.,.5,d);gl_FragColor=vec4(mix(uCol,vec3(1.),.35),a*vA);}`;
+
+const TRAIL_V=`attribute float aBirth;uniform float uTime,uPx;varying float vA;
+void main(){float age=uTime-aBirth;float a=clamp(1.-age/1.8,0.,1.);vA=a*a;
+ vec4 mv=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(.16*a*uPx/-mv.z,1.,16.);}`;
+const TRAIL_F=`uniform vec3 uCol;varying float vA;
+void main(){float d=length(gl_PointCoord-.5);float a=1.-smoothstep(0.,.5,d);gl_FragColor=vec4(uCol,a*vA);}`;
+
+const HOLO_V=`varying vec2 vUv;varying float vDist;void main(){vUv=uv;vec4 mv=modelViewMatrix*vec4(position,1.);vDist=-mv.z;gl_Position=projectionMatrix*mv;}`;
+const HOLO_F=`uniform float uTime,uVis,uSeed;uniform vec3 uTint;varying vec2 vUv;varying float vDist;
+void main(){
+ vec2 g=vUv*8.;vec2 id=floor(g);vec2 f=fract(g);float chk=mod(id.x+id.y,2.);
+ float e=min(min(f.x,1.-f.x),min(f.y,1.-f.y));float ln=1.-smoothstep(0.,.07,e);
+ float bo=1.-smoothstep(0.,.03,min(min(vUv.x,1.-vUv.x),min(vUv.y,1.-vUv.y)));
+ float sw=1.-smoothstep(0.,.1,abs(fract(vUv.y*.5+uTime*.08+uSeed)-.5)*2.);
+ float a=(ln*.5+chk*.1+bo*.9+sw*.22)*uVis;
+ gl_FragColor=vec4(uTint*(.4+ln+bo*1.4+sw*.6),a);}`;
+
+const CONE_V=`varying vec3 vN;varying vec3 vW;varying float vH;void main(){vH=(position.y+3.5)/7.;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`;
+const CONE_F=`uniform float uVis;varying vec3 vN;varying vec3 vW;varying float vH;
+void main(){vec3 V=normalize(cameraPosition-vW);float ndv=abs(dot(normalize(vN),V));
+ float a=pow(vH,1.2)*.5*pow(ndv,1.6)*uVis;gl_FragColor=vec4(vec3(1.,.78,.5)*a,a);}`;
+
+/* ------------------------------------------------------------------ geometry helpers */
+function splineProfile(pts,n){
+  const c=new THREE.SplineCurve(pts.map(a=>new THREE.Vector2(a[0],a[1])));
+  const out=c.getPoints(n);
+  return [new THREE.Vector2(0,out[0].y),...out,new THREE.Vector2(0,out[out.length-1].y)];
+}
+const PAWN_PTS=[[.66,0],[.68,.05],[.64,.12],[.55,.18],[.47,.24],[.4,.34],[.32,.5],[.27,.75],[.245,1.0],[.245,1.18],[.3,1.24],[.42,1.3],[.43,1.36],[.38,1.41],[.26,1.45],[.23,1.52],[.3,1.62],[.37,1.74],[.39,1.88],[.35,2.01],[.26,2.11],[.14,2.17]];
+const pawnProfile=splineProfile(PAWN_PTS,260);
+const pawnGeo=new THREE.LatheGeometry(pawnProfile,96);
+const rookGeo=new THREE.LatheGeometry(splineProfile([[.6,0],[.62,.1],[.5,.22],[.38,.4],[.36,1.2],[.5,1.3],[.54,1.5],[.52,1.85],[.36,1.85]],120),48);
+const bishopGeo=new THREE.LatheGeometry(splineProfile([[.6,0],[.62,.1],[.5,.22],[.3,.45],[.24,1.0],[.34,1.1],[.3,1.2],[.22,1.28],[.3,1.5],[.34,1.75],[.24,2.1],[.08,2.35]],140),48);
+const queenGeo=new THREE.LatheGeometry(splineProfile([[.62,0],[.64,.1],[.52,.22],[.3,.5],[.26,1.1],[.38,1.3],[.3,1.4],[.5,1.9],[.38,2.1],[.2,2.22],[.08,2.38]],140),48);
+const pieceGeos=[pawnGeo,pawnGeo,rookGeo,bishopGeo,queenGeo];
+
+function radiusAt(y){
+  for(let i=1;i<pawnProfile.length;i++){const a=pawnProfile[i-1],b=pawnProfile[i];
+    if(b.y>=y&&b.y>a.y){const t=(y-a.y)/(b.y-a.y);return lerp(a.x,b.x,clamp(t))}}
+  return .3;
+}
+
+/* ------------------------------------------------------------------ world */
+const S=1.6;                                   // chess square size
+const pawn=new THREE.Group();scene.add(pawn);
+
+const pawnMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uP:U.uP,uBreak:U.uBreak,uIntro:U.uIntro,uCore:U.uCore},
+  vertexShader:PAWN_V,fragmentShader:PAWN_F,transparent:true,side:THREE.DoubleSide});
+const pawnMesh=new THREE.Mesh(pawnGeo,pawnMat);pawnMesh.renderOrder=8;pawn.add(pawnMesh);
+
+/* glowing core living inside the pawn */
+const coreMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uCore:U.uCore,uVis:{value:0}},vertexShader:PAWN_V,fragmentShader:CORE_F,
+  transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});
+const coreGroup=new THREE.Group();pawn.add(coreGroup);
+{const inner=new THREE.Mesh(pawnGeo,coreMat);inner.scale.set(.5,.96,.5);inner.renderOrder=7;coreGroup.add(inner);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.24,24,16),coreMat);head.position.y=1.76;head.renderOrder=7;coreGroup.add(head);
+ const chest=new THREE.Mesh(new THREE.SphereGeometry(.12,16,12),coreMat);chest.position.y=.85;chest.renderOrder=7;coreGroup.add(chest);}
+
+/* mechanical rings that separate (40%) and reconnect */
+const ringMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uCore:U.uCore,uVis:{value:0}},vertexShader:RING_V,fragmentShader:RING_F,
+  transparent:true,side:THREE.DoubleSide});
+const rings=[];
+[[.22,.16,4.2],[.55,.1,2.6],[1.05,.1,3.4],[1.3,.14,5.2],[1.62,.12,2.2],[1.95,.13,3.8]].forEach(([y,h,len],i)=>{
+  const r=radiusAt(y)+.035;
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,48,1,true,rnd()*6.28,len),ringMat);
+  m.position.y=y;m.renderOrder=9;m.userData={y,dir:i%2?1:-1,off:(rnd()-.5)*.9,base:rnd()*6.28};pawn.add(m);rings.push(m);
+});
+
+/* particle swarm (80% break-apart) */
+const SW=900;
+const swPos=new Float32Array(SW*3),swR=new Float32Array(SW*4);
+{const segs=[];let tot=0;
+ for(let i=1;i<pawnProfile.length;i++){const a=pawnProfile[i-1],b=pawnProfile[i];const w=Math.hypot(a.x-b.x,a.y-b.y)*(a.x+b.x);segs.push(w);tot+=w}
+ for(let n=0;n<SW;n++){let t=rnd()*tot,i=0;while(i<segs.length-1&&t>segs[i]){t-=segs[i];i++}
+  const a=pawnProfile[i],b=pawnProfile[i+1],u=rnd(),r=lerp(a.x,b.x,u),y=lerp(a.y,b.y,u),th=rnd()*6.283;
+  swPos.set([Math.cos(th)*r,y,Math.sin(th)*r],n*3);swR.set([rnd(),rnd(),rnd(),rnd()],n*4)}}
+const swGeo=new THREE.BufferGeometry();swGeo.setAttribute('position',new THREE.BufferAttribute(swPos,3));swGeo.setAttribute('aR',new THREE.BufferAttribute(swR,4));
+const swMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uBreak:U.uBreak,uPx:U.uPx,uScale:{value:1},uCol:U.uCore},vertexShader:SWARM_V,fragmentShader:SWARM_F,
+  transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});
+const swarm=new THREE.Points(swGeo,swMat);swarm.frustumCulled=false;swarm.renderOrder=10;pawn.add(swarm);
+
+/* soft halo that keeps the pawn readable from far away */
+function glowTex(stops){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);
+  stops.forEach(s=>g.addColorStop(s[0],s[1]));x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)}
+const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex([[0,'rgba(255,255,255,.9)'],[.25,'rgba(255,255,255,.35)'],[1,'rgba(255,255,255,0)']]),
+  color:0x66eaff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false,opacity:0}));
+halo.renderOrder=11;scene.add(halo);
+
+/* spotlight shaft */
+const cone=new THREE.Mesh(new THREE.ConeGeometry(2.4,7,48,1,true),new THREE.ShaderMaterial({uniforms:{uVis:{value:0}},vertexShader:CONE_V,fragmentShader:CONE_F,
+  transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+cone.position.y=3.5;cone.renderOrder=2;scene.add(cone);
+
+/* board */
+const boardMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uP:U.uP,uIntro:U.uIntro,uPulseR:U.uPulseR,uPulseA:U.uPulseA,uQuiet:U.uQuiet,
+  uFogColor:U.uFogColor,uFogDens:U.uFogDens,uPings:U.uPings},vertexShader:BOARD_V,fragmentShader:BOARD_F,transparent:true,depthWrite:false});
+const board=new THREE.Mesh(new THREE.PlaneGeometry(1400,1400),boardMat);board.rotation.x=-Math.PI/2;board.renderOrder=0;scene.add(board);
+
+/* city */
+{const cells=[];const N=48;
+ for(let i=-N;i<=N;i++)for(let j=-N;j<=N;j++){
+   const x=i*S,z=j*S,d=Math.hypot(x,z);
+   if(d<16)continue;
+   const occ=.34-.18*(d/(N*S));
+   if(rnd()>occ)continue;
+   const hh=rnd();cells.push([x,z,.38*S+rnd()*.38*S,1.6+Math.pow(hh,2.4)*14*(.55+d/70),rnd()]);
+ }
+ const base=new THREE.BoxGeometry(1,1,1);base.translate(0,.5,0);
+ const g=new THREE.InstancedBufferGeometry();g.index=base.index;
+ ['position','normal','uv'].forEach(k=>g.setAttribute(k,base.attributes[k]));
+ const pos=new Float32Array(cells.length*3),siz=new Float32Array(cells.length*3);
+ cells.forEach((c,i)=>{pos.set([c[0],0,c[1]],i*3);siz.set([c[2],c[3],c[4]],i*3)});
+ g.setAttribute('aPos',new THREE.InstancedBufferAttribute(pos,3));g.setAttribute('aSize',new THREE.InstancedBufferAttribute(siz,3));
+ g.instanceCount=cells.length;
+ const m=new THREE.Mesh(g,new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uP:U.uP,uBuild:U.uBuild,uPulseR:U.uPulseR,uPulseA:U.uPulseA,uQuiet:U.uQuiet,
+   uFogColor:U.uFogColor,uFogDens:U.uFogDens},vertexShader:BLD_V,fragmentShader:BLD_F}));
+ m.frustumCulled=false;scene.add(m);
+}
+
+/* floating pieces in the distance */
+const pieceMats=[[.3,.9,1.],[.62,.5,1.],[1.,.62,.22]].map(c=>new THREE.ShaderMaterial({
+  uniforms:{uTime:U.uTime,uVis:U.uPieceVis,uFogDens:U.uFogDens,uTint:{value:new THREE.Color(c[0],c[1],c[2])}},vertexShader:PIECE_V,fragmentShader:PIECE_F,
+  transparent:true,depthWrite:false}));
+const pieces=[];
+for(let i=0;i<34;i++){
+  const a=rnd()*6.283,r=10+rnd()*20;
+  const x=Math.round(Math.cos(a)*r/S)*S,z=Math.round(Math.sin(a)*r/S)*S;
+  const m=new THREE.Mesh(pieceGeos[Math.floor(rnd()*pieceGeos.length)],pieceMats[rnd()<.15?2:(i%2)]);
+  const sc=1.3+rnd()*1.3;m.scale.setScalar(sc);m.position.set(x,0,z);m.renderOrder=4;scene.add(m);
+  pieces.push({m,sc,x,z,lift:1.5+rnd()*4,ph:rnd()*6.28,mv:-1,fx:0,fz:0,tx:0,tz:0});
+}
+
+/* neural network above the board (60%) */
+function flowMat(a,b,speed,fog){return new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uVis:{value:0},uSpeed:{value:speed},uColA:{value:new THREE.Color(a)},uColB:{value:new THREE.Color(b)},
+  uPings:U.uPings,uFogDens:fog?U.uFogDens:{value:0}},vertexShader:FLOW_V,fragmentShader:FLOW_F,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false})}
+function ptsMat(col,fog){return new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uPx:U.uPx,uVis:{value:0},uCol:{value:new THREE.Color(col)},uFogDens:fog?U.uFogDens:{value:0}},
+  vertexShader:PTS_V,fragmentShader:PTS_F,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false})}
+function nearest(nodes,k){
+  const edges=[];
+  for(let i=0;i<nodes.length;i++){const best=[];
+    for(let j=0;j<nodes.length;j++){if(i===j)continue;const dx=nodes[i][0]-nodes[j][0],dy=nodes[i][1]-nodes[j][1],dz=nodes[i][2]-nodes[j][2],d=dx*dx+dy*dy+dz*dz;
+      if(best.length<k||d<best[best.length-1][1]){best.push([j,d]);best.sort((a,b)=>a[1]-b[1]);if(best.length>k)best.pop()}}
+    best.forEach(b=>edges.push([i,b[0]]));}
+  return edges;
+}
+function lineGeo(segs){ // segs: [ax,ay,az,bx,by,bz,phase]
+  const p=new Float32Array(segs.length*6),t=new Float32Array(segs.length*2),ph=new Float32Array(segs.length*2);
+  segs.forEach((s,i)=>{p.set(s.slice(0,6),i*6);t[i*2]=0;t[i*2+1]=1;ph[i*2]=ph[i*2+1]=s[6]});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('aT',new THREE.BufferAttribute(t,1));g.setAttribute('aPhase',new THREE.BufferAttribute(ph,1));
+  return g;
+}
+function pointGeo(nodes,sizeFn){
+  const p=new Float32Array(nodes.length*3),s=new Float32Array(nodes.length),sd=new Float32Array(nodes.length);
+  nodes.forEach((n,i)=>{p.set(n,i*3);s[i]=sizeFn(n);sd[i]=rnd()});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('aSize',new THREE.BufferAttribute(s,1));g.setAttribute('aSeed',new THREE.BufferAttribute(sd,1));
+  return g;
+}
+const netMat=flowMat(0x4de8ff,0x8d7bff,.3,true),netPtsMat=ptsMat(0x7ff2ff,true);
+{const nodes=[];
+ for(let i=0;i<190;i++){const a=rnd()*6.283,r=8+rnd()*28;nodes.push([Math.round(Math.cos(a)*r/S)*S,.4+Math.pow(rnd(),1.6)*9,Math.round(Math.sin(a)*r/S)*S])}
+ const segs=nearest(nodes,3).map(e=>[...nodes[e[0]],...nodes[e[1]],rnd()]);
+ nodes.forEach(n=>segs.push([n[0],.02,n[2],n[0],n[1],n[2],rnd()]));
+ const l=new THREE.LineSegments(lineGeo(segs),netMat);l.frustumCulled=false;l.renderOrder=3;scene.add(l);
+ const pt=new THREE.Points(pointGeo(nodes,()=>.25),netPtsMat);pt.frustumCulled=false;pt.renderOrder=3;scene.add(pt);}
+
+/* decision trees */
+const treeMat=flowMat(0xff9d2e,0x4de8ff,.22,true),treePtsMat=ptsMat(0xffc27a,true);
+{const segs=[],nodes=[];
+ const grow=(x,y,ang,len,d,max)=>{const nx=x+Math.sin(ang)*len,ny=y+Math.cos(ang)*len;segs.push([x,y,0,nx,ny,0,d/max*.7+rnd()*.05]);nodes.push([nx,ny,0]);
+   if(d+1<max){const sp=.5+rnd()*.25;grow(nx,ny,ang-sp,len*.8,d+1,max);grow(nx,ny,ang+sp,len*.8,d+1,max)}};
+ grow(0,0,0,1.9,0,6);
+ for(let t=0;t<5;t++){const a=t/5*6.283+.4,R=17+rnd()*10,sc=1+rnd()*.6;
+  const grp=new THREE.Group();grp.position.set(Math.cos(a)*R,.1,Math.sin(a)*R);grp.rotation.y=Math.atan2(-Math.cos(a),-Math.sin(a));grp.scale.setScalar(sc);
+  const l=new THREE.LineSegments(lineGeo(segs),treeMat);l.frustumCulled=false;l.renderOrder=3;grp.add(l);
+  const pt=new THREE.Points(pointGeo(nodes,()=>.14),treePtsMat);pt.frustumCulled=false;pt.renderOrder=3;grp.add(pt);scene.add(grp);}}
+
+/* data streams */
+const streamMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uPx:U.uPx,uVis:{value:0},uCol:{value:new THREE.Color(0x66f0ff)}},vertexShader:STREAM_V,fragmentShader:STREAM_F,
+  transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});
+{const n=1800,p=new Float32Array(n*3),r=new Float32Array(n*4);
+ for(let i=0;i<n;i++){const a=rnd()*6.283,d=8+rnd()*52;p.set([Math.cos(a)*d,rnd()*26,Math.sin(a)*d],i*3);r.set([rnd(),rnd(),rnd(),rnd()],i*4)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('aR',new THREE.BufferAttribute(r,4));
+ const s=new THREE.Points(g,streamMat);s.frustumCulled=false;s.renderOrder=3;scene.add(s);}
+
+/* floating wire structures */
+const structs=[];
+{const geos=[new THREE.IcosahedronGeometry(1,0),new THREE.OctahedronGeometry(1,0),new THREE.BoxGeometry(1.4,1.4,1.4),new THREE.TorusGeometry(1,.25,6,18),new THREE.TetrahedronGeometry(1.2,0)];
+ const cols=[0x4de8ff,0x8d7bff,0xff9d2e];
+ for(let i=0;i<16;i++){const a=rnd()*6.283,r=9+rnd()*24;
+  const m=new THREE.LineSegments(new THREE.EdgesGeometry(geos[i%geos.length]),new THREE.LineBasicMaterial({color:cols[i%3],transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+  m.position.set(Math.cos(a)*r,3+rnd()*10,Math.sin(a)*r);m.scale.setScalar(1+rnd()*2.6);m.userData={sp:(rnd()-.5)*.6,ph:rnd()*6.28,y:m.position.y};scene.add(m);structs.push(m);}}
+
+/* multiverse: holographic boards, pathways, travelling pieces, infinite network */
+const mv=new THREE.Group();scene.add(mv);
+const holoMats=[];
+const boardsPos=[];
+{const defs=[];
+ for(let i=0;i<3;i++){const a=i/3*6.283+.5;defs.push([Math.cos(a)*24,6+i*3,Math.sin(a)*24,11,.35,.1]);}     // near: holographic boards around the main one
+ for(let i=0;i<9;i++){const a=rnd()*6.283,r=45+rnd()*85;defs.push([Math.cos(a)*r,(rnd()-.4)*60,Math.sin(a)*r,10+rnd()*14,(rnd()-.5)*.9,(rnd()-.5)*.9]);} // far
+ defs.forEach((d,i)=>{
+  const mat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uVis:{value:0},uSeed:{value:rnd()},uTint:{value:new THREE.Color(i%3===2?0xff9d2e:(i%2?0x8d7bff:0x4de8ff))}},
+   vertexShader:HOLO_V,fragmentShader:HOLO_F,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(d[3],d[3]),mat);m.position.set(d[0],d[1],d[2]);m.rotation.set(-Math.PI/2+d[4],0,d[5]);m.renderOrder=3;mv.add(m);
+  holoMats.push({mat,near:i<3,i});boardsPos.push(new THREE.Vector3(d[0],d[1],d[2]));});}
+const pathMat=flowMat(0xff9d2e,0x4de8ff,.18,false);
+const paths=[];
+{const segs=[];const pts=[new THREE.Vector3(0,0,0),...boardsPos];
+ pts.forEach((p,i)=>{const near=pts.map((q,j)=>[j,p.distanceTo(q)]).filter(a=>a[0]!==i).sort((a,b)=>a[1]-b[1]).slice(0,2);
+  near.forEach(([j])=>{const q=pts[j];segs.push([p.x,p.y,p.z,q.x,q.y,q.z,rnd()]);if(i<j)paths.push([p,q])});});
+ const l=new THREE.LineSegments(lineGeo(segs),pathMat);l.frustumCulled=false;l.renderOrder=3;mv.add(l);}
+const travelers=[];
+for(let i=0;i<6;i++){const pr=paths[Math.floor(rnd()*paths.length)];
+  const m=new THREE.Mesh(pieceGeos[i%pieceGeos.length],pieceMats[i%2]);m.scale.setScalar(1.4);m.renderOrder=4;mv.add(m);travelers.push({m,a:pr[0],b:pr[1],off:rnd(),sp:.05+rnd()*.05});}
+const farMat=flowMat(0x4de8ff,0xff9d2e,.12,false),farPtsMat=ptsMat(0xaaf4ff,false);
+{const nodes=[];
+ for(let i=0;i<1300;i++){const a=rnd()*6.283,r=70+Math.pow(rnd(),.7)*380;nodes.push([Math.cos(a)*r,(rnd()-.5)*r*.8,Math.sin(a)*r])}
+ const segs=nearest(nodes,2).map(e=>[...nodes[e[0]],...nodes[e[1]],rnd()]);
+ const l=new THREE.LineSegments(lineGeo(segs),farMat);l.frustumCulled=false;l.renderOrder=3;mv.add(l);
+ const pt=new THREE.Points(pointGeo(nodes,n=>Math.hypot(n[0],n[2])*.0042*(.6+rnd())),farPtsMat);pt.frustumCulled=false;pt.renderOrder=3;mv.add(pt);}
+
+/* dust motes around the pawn */
+const dustMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uPx:U.uPx,uVis:{value:0},uCol:{value:new THREE.Color(1,.78,.5)}},vertexShader:DUST_V,fragmentShader:DUST_F,
+  transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});
+{const n=520,p=new Float32Array(n*3),r=new Float32Array(n*4);
+ for(let i=0;i<n;i++){const a=rnd()*6.283,d=Math.sqrt(rnd())*4.2;p.set([Math.cos(a)*d,rnd()*5.5,Math.sin(a)*d],i*3);r.set([rnd(),rnd(),rnd(),rnd()],i*4)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('aR',new THREE.BufferAttribute(r,4));
+ const d=new THREE.Points(g,dustMat);d.frustumCulled=false;d.renderOrder=10;scene.add(d);}
+
+/* move trails */
+const TR=420;let trPtr=0;
+const trPos=new Float32Array(TR*3),trBirth=new Float32Array(TR).fill(-100);
+const trGeo=new THREE.BufferGeometry();trGeo.setAttribute('position',new THREE.BufferAttribute(trPos,3));trGeo.setAttribute('aBirth',new THREE.BufferAttribute(trBirth,1));
+const trail=new THREE.Points(trGeo,new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uPx:U.uPx,uCol:{value:new THREE.Color(0x7ff2ff)}},vertexShader:TRAIL_V,fragmentShader:TRAIL_F,
+  transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+trail.frustumCulled=false;trail.renderOrder=4;scene.add(trail);
+function emitTrail(x,y,z){trPos.set([x,y,z],trPtr*3);trBirth[trPtr]=U.uTime.value;trPtr=(trPtr+1)%TR;trGeo.attributes.position.needsUpdate=true;trGeo.attributes.aBirth.needsUpdate=true}
+
+/* faint ancient silhouettes drifting in the dark (10%) — chaturanga & chess glyphs */
+const sil=[];
+{const glyphs=['♞','♜','♝','♚','♛','♟'];
+ glyphs.forEach((gl,i)=>{
+  const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+  x.font='190px "Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans","Apple Symbols",serif';x.textAlign='center';x.textBaseline='middle';
+  x.shadowColor='rgba(255,170,90,.9)';x.shadowBlur=26;x.fillStyle='rgba(255,170,90,.55)';x.fillText(gl,128,138);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0}));
+  const a=(i/glyphs.length-.5)*2.3;sp.position.set(Math.sin(a)*13,2+rnd()*4,-8-Math.cos(a)*5);sp.scale.setScalar(4+rnd()*3);sp.renderOrder=1;scene.add(sp);sil.push({sp,ph:i*1.7});});}
+
+/* ------------------------------------------------------------------ camera path (Catmull-Rom through milestone keys) */
+//        radius azimuth height targetY fov scale hover
+const KEYS=[
+  [7.6,0,1.45,1.05,38,1,0],      //   0%  centred pawn
+  [4.4,0,1.2,1.02,38,1,0],       //  10%  push in
+  [4.9,.55,1.6,1.08,40,1,0],     //  20%  begin orbit
+  [6.2,1.25,2.6,1.2,42,1,0],     //  30%
+  [12.5,2.15,6.5,1.8,45,1.15,.1],//  40%  pull back
+  [22,3.05,12.5,2.4,48,1.5,.25], //  50%  dramatic reveal
+  [24,3.9,13.5,3,48,1.9,.35],    //  60%
+  [30,4.5,21,3.6,50,2.5,.6],     //  70%  rising, backing away
+  [40,5.05,31,4.6,50,3.1,.8],    //  80%
+  [56,5.6,44,5.6,50,3.6,.8],     //  90%  extremely far
+  [7.6,6.28318,1.45,1.05,38,1,0] // 100%  settles — same framing as 0%
+];
+const cr=(a,b,c,d,t)=>.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);
+function key(p){
+  const n=KEYS.length-1,x=clamp(p)*n,i=Math.min(n-1,Math.floor(x)),t=x-i;
+  const k0=KEYS[Math.max(0,i-1)],k1=KEYS[i],k2=KEYS[i+1],k3=KEYS[Math.min(n,i+2)];
+  return k1.map((_,c)=>cr(k0[c],k1[c],k2[c],k3[c],t));
+}
+
+/* ------------------------------------------------------------------ DOM bits */
+const caps=[...document.querySelectorAll('.cap')];
+const hero=$('#hero'),hint=$('#hint'),pctEl=$('#pct'),eraEl=$('#era'),railFill=$('#railFill'),flash=$('#flash'),journey=$('#journey');
+const ticks=[];
+{const rail=$('#rail');for(let i=0;i<=10;i++){const t=document.createElement('div');t.className='tick';t.style.top=(i*10)+'%';t.innerHTML='<span>'+String(i*10).padStart(2,'0')+'</span>';rail.appendChild(t);ticks.push(t)}}
+const ERAS=['Ancient pawn','Hybrid pawn','Futuristic piece','Digital piece','Abstract symbol'];
+let lastPct=-1,lastTick=-1;
+
+function resize(){
+  const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;
+}
+addEventListener('resize',resize);resize();
+
+let scrollTarget=0;
+function readScroll(){
+  const end=Math.max(1,journey.offsetHeight-innerHeight);
+  scrollTarget=clamp(scrollY/end);
+  const over=sstep(end,end+innerHeight*.7,scrollY);
+  hero.dataset.over=over;
+}
+addEventListener('scroll',readScroll,{passive:true});addEventListener('resize',readScroll);readScroll();
+$('#skip').addEventListener('click',e=>{e.preventDefault();document.getElementById('site').scrollIntoView({behavior:reduceMotion?'auto':'smooth'})});
+
+let mx=0,my=0,tmx=0,tmy=0;
+addEventListener('pointermove',e=>{tmx=e.clientX/innerWidth*2-1;tmy=e.clientY/innerHeight*2-1},{passive:true});
+
+/* ------------------------------------------------------------------ main loop */
+const cA=new THREE.Color(1,.62,.22),cB=new THREE.Color(.3,.9,1),cC=new THREE.Color(.6,.95,1),cD=new THREE.Color(1,.8,.45);
+const bg0=new THREE.Color(.004,.003,.003),bg1=new THREE.Color(.007,.014,.04),bg2=new THREE.Color(.008,.012,.034);
+const tmpV=new THREE.Vector3(),tmpC=new THREE.Color();
+let P=DEBUG_P!==null?DEBUG_P:0,prevP=P,T=DEBUG_P!==null?12:0,introT=DEBUG_P!==null?10:-.4,last=performance.now()/1000;
+let pulseT=qs.has('pulse')?.9:99,moveClock=0,trailClock=0;
+requestAnimationFrame(function loop(ts){
+  requestAnimationFrame(loop);
+  if(document.hidden)return;
+  const now=ts/1000,rawDt=Math.min(.25,Math.max(0,now-last)),dt=Math.min(.05,rawDt);last=now;T+=dt;introT+=dt;
+  U.uTime.value=T;
+
+  if(DEBUG_P===null){P+=(scrollTarget-P)*(1-Math.exp(-rawDt*(reduceMotion?14:4.2)));if(Math.abs(scrollTarget-P)<2e-4)P=scrollTarget}
+  if((prevP<.5&&P>=.5)||(prevP>.5&&P<=.5)){pulseT=0;flash.classList.remove('go');void flash.offsetWidth;flash.classList.add('go')}
+  prevP=P;
+  U.uP.value=P;
+  const intro=1-Math.pow(1-clamp(introT/4.2),3);U.uIntro.value=intro;
+
+  /* pulse */
+  pulseT+=dt;U.uPulseR.value=pulseT*34;U.uPulseA.value=Math.max(0,1-pulseT/2.8);
+  U.uBuild.value=sstep(.3,.56,P);
+  U.uQuiet.value=lerp(1,.35,sstep(.93,1,P));
+
+  /* atmosphere */
+  tmpC.copy(bg0).lerp(bg1,sstep(.25,.5,P)).lerp(bg2,sstep(.8,1,P));
+  renderer.setClearColor(tmpC);U.uFogColor.value.copy(tmpC);
+  U.uFogDens.value=lerp(.012,.0055,sstep(.5,.9,P));
+  U.uCore.value.copy(cA).lerp(cB,sstep(.12,.45,P)).lerp(cC,sstep(.7,.9,P)).lerp(cD,sstep(.95,1,P)*.35);
+
+  /* camera */
+  const k=key(P);
+  const par=sstep(.04,.2,P)*(1-sstep(.97,1,P));
+  mx+=(tmx-mx)*.04;my+=(tmy-my)*.04;
+  const az=k[1]+mx*.05*par+T*.012*sstep(.6,.95,P)*(1-sstep(.9,1,P));
+  const hgt=k[2]-my*.35*par*(1+k[0]*.05);
+  camera.position.set(Math.sin(az)*k[0],hgt,Math.cos(az)*k[0]);
+  const s=k[5];
+  camera.lookAt(0,k[3],0);
+  const asp=camera.aspect;camera.fov=k[4]*(asp<1?1+(1-asp)*.55:1);camera.updateProjectionMatrix();
+  U.uPx.value=renderer.domElement.height/(2*Math.tan(camera.fov*Math.PI/360));
+  const camDist=camera.position.length();
+
+  /* pawn */
+  pawn.scale.setScalar(s);
+  pawn.position.y=k[6]*(1+.12*Math.sin(T*1.1));
+  pawn.rotation.y=P*9.5;
+  const brk=sstep(.765,.805,P)*(1-sstep(.835,.88,P));
+  U.uBreak.value=brk;swMat.uniforms.uScale.value=s;
+  coreMat.uniforms.uVis.value=(.22*sstep(.08,.2,P)+.78*sstep(.35,.62,P))*intro*(1-brk*.5);
+  const sep=Math.max(sstep(.3,.42,P)*(1-sstep(.44,.54,P)),.85*brk);
+  ringMat.uniforms.uVis.value=intro*sstep(.26,.34,P)*(1-.7*sstep(.6,.74,P))*(1-.6*sstep(.9,1,P));
+  rings.forEach(r=>{const u=r.userData;
+    r.scale.set(1+sep*.9,1,1+sep*.9);
+    r.rotation.y=u.base+sep*u.dir*1.3+T*.25*u.dir*sstep(.55,1,P);
+    r.position.y=u.y+sep*u.off*1.4});
+
+  /* halo, spotlight, dust, silhouettes */
+  const hv=.5*sstep(.55,.9,P)*(1-.8*sstep(.96,1,P))+.1*sstep(.2,.5,P);
+  halo.material.opacity=hv;halo.position.set(0,pawn.position.y+1.1*s,0);halo.scale.setScalar(5*s+camDist*.05);halo.material.color.copy(U.uCore.value);
+  cone.material.uniforms.uVis.value=intro*.6*(1-sstep(.1,.35,P));
+  dustMat.uniforms.uVis.value=intro*(1-.85*sstep(.28,.5,P));dustMat.uniforms.uCol.value.copy(U.uCore.value).lerp(cA,.5*(1-sstep(.2,.5,P)));
+  sil.forEach(o=>{const f=Math.pow(Math.max(0,Math.sin(T*.35+o.ph)),4);o.sp.material.opacity=.14*f*sstep(.05,.14,P)*(1-sstep(.2,.3,P));});
+
+  /* floating pieces + moves */
+  U.uPieceVis.value=intro*sstep(.26,.4,P)*(1-.7*sstep(.88,.99,P));
+  const lift=sstep(.34,.5,P);
+  moveClock+=dt;
+  if(moveClock>1.9&&P>.5&&P<.98){moveClock=0;const pc=pieces[Math.floor(Math.random()*pieces.length)];
+    if(pc.mv<0){pc.fx=pc.x;pc.fz=pc.z;const a=Math.atan2(pc.z,pc.x)+(Math.random()-.5)*.6,r=clamp(Math.hypot(pc.x,pc.z)+(Math.random()-.5)*10,10,32);
+      pc.tx=Math.round(Math.cos(a)*r/S)*S;pc.tz=Math.round(Math.sin(a)*r/S)*S;pc.mv=0;addPing(pc.fx,1,pc.fz)}}
+  pieces.forEach(pc=>{
+    let x=pc.x,z=pc.z,arc=0;
+    if(pc.mv>=0){pc.mv+=dt/1.6;const e=pc.mv<1?pc.mv*pc.mv*(3-2*pc.mv):1;x=lerp(pc.fx,pc.tx,e);z=lerp(pc.fz,pc.tz,e);arc=Math.sin(Math.PI*e)*2.2;
+      if(pc.mv>=1){pc.x=pc.tx;pc.z=pc.tz;pc.mv=-1;addPing(pc.tx,1,pc.tz)}}
+    pc.m.position.set(x,lift*(pc.lift+Math.sin(T*.7+pc.ph)*.3)+arc,z);
+    pc.m.rotation.y=pc.ph+T*.1*lift;
+    pc.m.scale.setScalar(pc.sc*sstep(8,20,Math.hypot(x-camera.position.x,z-camera.position.z)));
+    if(pc.mv>=0&&trailClock>.03)emitTrail(x,pc.m.position.y+1.2,z);
+  });
+  trailClock=trailClock>.03?0:trailClock+dt;
+  U.uPings.value.forEach(v=>{if(v.w>=0){v.w+=dt;if(v.w>6)v.w=-1}});
+
+  /* network, trees, streams, structures */
+  const netV=intro*sstep(.55,.66,P)*(1-.6*sstep(.88,.98,P));
+  netMat.uniforms.uVis.value=netV;netPtsMat.uniforms.uVis.value=netV*.9;
+  const treeV=intro*sstep(.54,.64,P)*(1-.85*sstep(.86,.95,P));
+  treeMat.uniforms.uVis.value=treeV;treePtsMat.uniforms.uVis.value=treeV;
+  streamMat.uniforms.uVis.value=intro*sstep(.52,.62,P)*(1-.7*sstep(.94,1,P))*.9;
+  const stV=sstep(.34,.46,P)*(1-.5*sstep(.8,.95,P))*U.uQuiet.value;
+  structs.forEach(m=>{m.material.opacity=stV*.7;m.rotation.x+=dt*m.userData.sp;m.rotation.y+=dt*m.userData.sp*1.3;m.position.y=m.userData.y+Math.sin(T*.5+m.userData.ph)*.6});
+
+  /* multiverse */
+  const mvNear=sstep(.62,.78,P),mvFar=sstep(.74,.88,P),q=U.uQuiet.value;
+  holoMats.forEach(h=>{h.mat.uniforms.uVis.value=intro*(h.near?mvNear:mvFar)*q*.9});
+  pathMat.uniforms.uVis.value=intro*mvFar*q;
+  farMat.uniforms.uVis.value=intro*sstep(.72,.9,P)*(1-.65*sstep(.94,1,P))*.9;farPtsMat.uniforms.uVis.value=farMat.uniforms.uVis.value*1.1;
+  mv.rotation.y=T*.012+P*.5;
+  travelers.forEach(t=>{const f=(T*t.sp+t.off)%1,e=f*f*(3-2*f);t.m.position.lerpVectors(t.a,t.b,e);t.m.position.y+=Math.sin(Math.PI*e)*3+1;t.m.rotation.y=T*.4;
+    t.m.visible=mvFar>.02;t.m.getWorldPosition(tmpV);if(mvFar>.4&&trailClock===0&&Math.random()<.4)emitTrail(tmpV.x,tmpV.y+1,tmpV.z)});
+
+  /* DOM */
+  const pc=Math.round(P*100);
+  if(pc!==lastPct){lastPct=pc;pctEl.textContent=String(pc).padStart(3,'0');eraEl.textContent=P>=.985?'Reimagined':ERAS[Math.min(4,Math.floor(P*5))]}
+  railFill.style.transform='scaleY('+P+')';
+  const ti=Math.round(P*10);
+  if(ti!==lastTick){lastTick=ti;ticks.forEach((t,i)=>{t.classList.toggle('on',i<=ti);t.classList.toggle('cur',i===ti)})}
+  caps.forEach(c=>{const at=+c.dataset.at,d=P-at;const o=1-sstep(.012,.05,Math.abs(d));
+    c.style.opacity=(o*(at===0?intro:1)).toFixed(3);c.style.transform='translateY('+(-d*420).toFixed(1)+'px)'});
+  hint.classList.toggle('show',introT>3.2&&P<.012);
+  const over=+hero.dataset.over||0;
+  hero.style.opacity=(sstep(.95,.995,P)*(1-over)).toFixed(3);
+  hero.classList.toggle('live',P>.97&&over<.5);
+  document.body.classList.toggle('is-ready',P>.955);
+
+  renderer.render(scene,camera);
+});
+})();
+</script>
+</body>
+</html>
