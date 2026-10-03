@@ -6,7 +6,7 @@
 <title>Chess Bharat — Chess, Reimagined</title>
 <meta name="description" content="Chess has existed for centuries, but it is still evolving. Scroll through the evolution of chess.">
 <meta name="theme-color" content="#04050a">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050a'/%3E%3Cpath d='M32 10a9 9 0 0 1 5 16.5c3 1.7 4.5 4.6 4.5 8H46l3 13H15l3-13h4.500c0-3.400 1.500-6.300 4.500-8A9 9 0 0 1 32 10z' fill='%23ff9d2e'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2304050a'/%3E%3Ctext x='33' y='50' font-size='46' text-anchor='middle' fill='%23ff9d2e'%3E%E2%99%9E%3C/text%3E%3C/svg%3E">
 
 <style>
 /* ==========================================================================
@@ -48,9 +48,14 @@ a{color:inherit;text-decoration:none}
 .top{position:fixed;inset:0 0 auto 0;z-index:5;display:flex;align-items:center;justify-content:space-between;
   padding:18px var(--gutter);pointer-events:none}
 .top>*{pointer-events:auto}
-.brand{display:flex;align-items:center;gap:10px;font-family:var(--ff-mono);font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--ink)}
-.brand svg{width:22px;height:22px;fill:var(--saffron)}
-.brand b{font-weight:600;color:var(--saffron)}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink)}
+.brand .mark{width:40px;height:37px;flex:none;opacity:.92;filter:drop-shadow(0 0 10px rgba(255,157,46,.35)) drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+.brand .mark .head{fill:#c3cad3;stroke:rgba(10,14,22,.55);stroke-width:2}
+.brand .mark .eye{fill:#10151f}
+.brand .mark .mane{opacity:.95}
+.brand .wm{display:flex;flex-direction:column;line-height:.92;font-family:var(--ff-display);font-weight:600;font-size:17px;letter-spacing:.16em;color:var(--ink);text-shadow:0 1px 10px rgba(0,0,0,.7)}
+.brand .wm b{font-weight:600;color:var(--saffron)}
+@media (max-width:460px){.brand .wm{font-size:14px}.brand .mark{width:34px;height:31px}}
 .nav{display:flex;gap:clamp(14px,2.4vw,34px);font-size:13px;letter-spacing:.06em;
   opacity:0;transform:translateY(-10px);pointer-events:none;transition:opacity .9s ease,transform .9s ease}
 .nav a{color:var(--ink-dim);padding:6px 2px;position:relative;transition:color .25s}
@@ -142,11 +147,21 @@ body.is-ready .readout{opacity:0}
 
 <header class="top">
   <a class="brand" href="#" aria-label="Chess Bharat home">
-    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8a10 10 0 0 1 5.500 18.300c3.200 1.800 4.800 4.800 4.800 8.500H47l3.200 14.200H13.800L17 34.800h4.700c0-3.700 1.600-6.700 4.800-8.500A10 10 0 0 1 32 8z"/></svg>
-    <span><b>Chess</b> Bharat</span>
+    <svg class="mark" viewBox="0 0 140 128" aria-hidden="true">
+      <!-- tricolour mane, swept back behind the knight's head -->
+      <g class="mane">
+        <path fill="#ff9d2e" d="M78 24C57 22 40 34 31 55c-5 11-7 23-6 34 6-9 13-16 22-20-8 11-12 23-11 36 8-13 18-22 31-28-7-15-5-34 11-53z"/>
+        <path fill="#f3f5f8" d="M83 30C65 30 50 41 42 60c-4 10-6 20-5 30 6-9 13-15 21-19-6 10-9 20-8 31 8-12 17-20 29-26-6-13-3-29 4-46z"/>
+        <path fill="#2fa34a" d="M88 38C73 39 60 49 53 66c-4 9-5 18-4 27 6-8 12-13 19-17-5 9-7 18-6 27 7-10 16-17 27-22-5-12-2-25 -1-40z"/>
+      </g>
+      <!-- knight head -->
+      <path class="head" d="M86 20c-10 1-16 8-20 18-3 8-8 12-16 18-2 2-3 5-2 8 4 0 8-2 11-5-2 5-3 9-2 14 3 1 6 0 8-2l2 10c1 5 2 10 2 15h34c1-16-2-30-9-42 3 2 7 3 10 2 2-4 0-8-4-11 3-3 3-8 0-12-4-6-10-11-18-13-2-1-4-1-6 0z"/>
+      <circle class="eye" cx="99" cy="46" r="3"/>
+    </svg>
+    <span class="wm">CHESS<b>BHARAT</b></span>
   </a>
   <nav class="nav" aria-label="Primary">
-    <a href="#news">News</a><a href="#players">Players</a><a href="#learn">Learn</a><a href="#tournaments">Tournaments</a><a href="#about">About</a>
+    <a href="#bulletin">Bulletin</a><a href="#history">History</a><a href="#horoscope">Horoscope</a><a href="#puzzles">Puzzles</a><a href="#learn">Learn</a><a href="#new">New to Chess</a>
   </nav>
 </header>
 <a class="skip" href="#site" id="skip">Skip intro</a>
@@ -178,42 +193,60 @@ body.is-ready .readout{opacity:0}
 <main>
   <div id="journey" aria-hidden="true"></div>
 
-  <!-- Placeholder site content: replace with real Chess Bharat sections. -->
+  <!-- Site content. Headings and copy are placeholders in Chess Bharat's voice; swap in live posts. -->
   <section class="site" id="site">
     <div class="wrap">
-      <div class="sec" id="news">
-        <div class="sec-head"><span class="eyebrow">Latest</span><h2>From the board</h2></div>
+      <div class="sec" id="bulletin">
+        <div class="sec-head"><span class="eyebrow">Chess Bulletin</span><h2>What happened today</h2></div>
         <div class="grid">
-          <a class="card" href="#"><span class="tag">News</span><h3>Headline goes here</h3><p>A short, sharp summary of the story sits underneath the title.</p></a>
-          <a class="card" href="#"><span class="tag">History</span><h3>Where chess began</h3><p>Chaturanga to chess: the long road of the game from India to the world.</p></a>
-          <a class="card" href="#"><span class="tag">Opinion</span><h3>The next frontier</h3><p>What the next decade of chess could look like, on and off the board.</p></a>
+          <a class="card" href="#"><span class="tag">Report</span><h3>Result and what it meant</h3><p>Who won, in how many moves, and the one turn the game hinged on.</p></a>
+          <a class="card" href="#"><span class="tag">India</span><h3>From the Indian circuit</h3><p>Norms, upsets and the players climbing the rating list this week.</p></a>
+          <a class="card" href="#"><span class="tag">World</span><h3>The global board</h3><p>Results abroad, read through what they change for Indian chess.</p></a>
         </div>
       </div>
-      <div class="sec" id="players">
-        <div class="sec-head"><span class="eyebrow">People</span><h2>Players to watch</h2></div>
+      <div class="sec" id="history">
+        <div class="sec-head"><span class="eyebrow">Indian Chess History</span><h2>Where the game began</h2></div>
         <div class="grid">
-          <a class="card" href="#"><span class="tag">Profile</span><h3>Player name</h3><p>Rating, style and the story behind the rise.</p></a>
-          <a class="card" href="#"><span class="tag">Profile</span><h3>Player name</h3><p>Rating, style and the story behind the rise.</p></a>
-          <a class="card" href="#"><span class="tag">Profile</span><h3>Player name</h3><p>Rating, style and the story behind the rise.</p></a>
+          <a class="card" href="#"><span class="tag">Origins</span><h3>Chaturanga to chess</h3><p>The game left India centuries ago. This is the road it took.</p></a>
+          <a class="card" href="#"><span class="tag">1848</span><h3>The master nobody names</h3><p>An Indian player beat a British chess master. Few remember him.</p></a>
+          <a class="card" href="#"><span class="tag">Lineage</span><h3>Before the grandmasters</h3><p>The clubs, the patrons and the games that set the stage for Anand.</p></a>
+        </div>
+      </div>
+      <div class="sec" id="horoscope">
+        <div class="sec-head"><span class="eyebrow">Chess Horoscope</span><h2>Your week on the board</h2></div>
+        <div class="grid">
+          <a class="card" href="#"><span class="tag">This week</span><h3>Play sharp, not safe</h3><p>A light, for-fun read that pairs your sign with an opening to try.</p></a>
+          <a class="card" href="#"><span class="tag">Style</span><h3>Attacker or grinder</h3><p>Find the kind of player the stars say you are this week.</p></a>
+          <a class="card" href="#"><span class="tag">Fun</span><h3>Your lucky square</h3><p>One square, one idea, one game to go and play tonight.</p></a>
+        </div>
+      </div>
+      <div class="sec" id="puzzles">
+        <div class="sec-head"><span class="eyebrow">Daily Puzzles</span><h2>Today's position</h2></div>
+        <div class="grid">
+          <a class="card" href="#"><span class="tag">Mate in 2</span><h3>White to play</h3><p>A fresh puzzle every morning. Solve it before your chai goes cold.</p></a>
+          <a class="card" href="#"><span class="tag">Tactic</span><h3>Find the winning move</h3><p>One move changes everything. See it, calculate it, play it.</p></a>
+          <a class="card" href="#"><span class="tag">Endgame</span><h3>Hold the draw</h3><p>Fewer pieces, harder choices. Where games are quietly won.</p></a>
         </div>
       </div>
       <div class="sec" id="learn">
-        <div class="sec-head"><span class="eyebrow">Learn</span><h2>Start your first move</h2></div>
+        <div class="sec-head"><span class="eyebrow">Learn Chess</span><h2>Get better, move by move</h2></div>
         <div class="grid steps">
-          <a class="card" href="#"><span class="num">01</span><h3>The pieces</h3><p>How every piece moves, and why.</p></a>
-          <a class="card" href="#"><span class="num">02</span><h3>Openings</h3><p>Ideas, not memorisation.</p></a>
-          <a class="card" href="#"><span class="num">03</span><h3>Tactics</h3><p>See it, calculate it, play it.</p></a>
-          <a class="card" href="#"><span class="num">04</span><h3>Endgames</h3><p>Where games are quietly won.</p></a>
+          <a class="card" href="#"><span class="num">01</span><h3>Openings</h3><p>Ideas, not memorisation.</p></a>
+          <a class="card" href="#"><span class="num">02</span><h3>Tactics</h3><p>Pins, forks and the patterns that win material.</p></a>
+          <a class="card" href="#"><span class="num">03</span><h3>Strategy</h3><p>Plans for the quiet positions, when nothing is forced.</p></a>
+          <a class="card" href="#"><span class="num">04</span><h3>Endgames</h3><p>The technique that turns an edge into a point.</p></a>
         </div>
       </div>
-      <div class="sec" id="tournaments">
-        <div class="sec-head"><span class="eyebrow">Calendar</span><h2>Tournaments</h2></div>
-        <div class="grid">
-          <a class="card" href="#"><span class="tag">Upcoming</span><h3>Event name</h3><p>Dates, venue and format.</p></a>
-          <a class="card" href="#"><span class="tag">Upcoming</span><h3>Event name</h3><p>Dates, venue and format.</p></a>
+      <div class="sec" id="new">
+        <div class="sec-head"><span class="eyebrow">New to Chess</span><h2>Start your first move</h2></div>
+        <div class="grid steps">
+          <a class="card" href="#"><span class="num">01</span><h3>The board</h3><p>How it is set up, and why the light square goes on the right.</p></a>
+          <a class="card" href="#"><span class="num">02</span><h3>The pieces</h3><p>How every piece moves, in plain words.</p></a>
+          <a class="card" href="#"><span class="num">03</span><h3>The rules</h3><p>Check, castling, en passant and the draws beginners miss.</p></a>
+          <a class="card" href="#"><span class="num">04</span><h3>Your first game</h3><p>Three simple ideas to carry into move one.</p></a>
         </div>
       </div>
-      <div class="sec" id="about"><div class="sec-head"><span class="eyebrow">About</span><h2>Chess has existed for centuries, but it is still evolving.</h2></div></div>
+      <div class="sec" id="about"><div class="sec-head"><span class="eyebrow">About</span><h2>The game left India centuries ago. It is still coming home.</h2></div></div>
       <div class="foot"><span>© Chess Bharat</span><span>The form may change. The game survives.</span></div>
     </div>
   </section>
@@ -302,16 +335,41 @@ void main(){
   if(dn<thr)discard;
   float dEdge=uBreak>.001?1.-smoothstep(thr,thr+.09,dn):0.;
 
-  /* aged wood */
+  /* turned wood — carved from a vertical dowel on a lathe */
   float smoothW=smoothstep(.1,.38,p);
-  float gr=fbm(vec3(vObj.x*8.,y*1.4,vObj.z*8.));
-  gr=mix(gr,.5,smoothW*.7);
-  vec3 wood=mix(vec3(.05,.03,.02),vec3(.22,.13,.07),gr);
-  float wear=smoothstep(.55,.8,fbm(vObj*7.+3.))*(1.-smoothW);
-  wood=mix(wood,vec3(.28,.22,.17),wear*.5);
-  float spW=mix(26.,140.,smoothW);
-  vec3 woodLit=wood*(.16+dif*1.5*vec3(1.,.82,.6)+dif2*.12*vec3(.5,.6,1.))
-              +vec3(1.,.85,.6)*pow(max(dot(N,H),0.),spW)*mix(.05,.5,smoothW);
+  float rad=length(vObj.xz);
+  /* growth rings: concentric cylinders about an off-centre pith */
+  float pith=length(vObj.xz*vec2(1.,.82)+vec2(.07,-.05));
+  float warp=fbm(vObj*vec3(1.4,.5,1.4))*1.1;
+  float ringC=pith*8.5+warp+y*.15;
+  float ring=abs(fract(ringC)-.5)*2.;              // 0 at a ring line
+  float ringLine=1.-smoothstep(.0,.16,ring);        // dark grain lines
+  /* long vertical streaks that follow the grain down the piece */
+  float streak=fbm(vec3(th*3.2,y*.9,pith*2.))*.7+fbm(vec3(th*9.,y*2.2,4.))*.3;
+  /* fine lathe tool marks, faint horizontal bands */
+  float tool=sin(y*210.+warp*2.)*.5+.5;
+  vec3 wDark=vec3(.050,.023,.012);
+  vec3 wMid =vec3(.165,.078,.037);
+  vec3 wLite=vec3(.345,.195,.105);
+  vec3 wood=mix(wDark,wMid,smoothstep(.2,.85,streak));
+  wood=mix(wood,wLite,smoothstep(.62,.95,streak)*.7);   // sap streaks
+  wood*=1.-.42*ringLine;                                 // darken grain lines
+  wood*=.94+.06*tool;                                    // tool marks
+  float figure=fbm(vObj*6.2+7.);                          // burl / figure blotches
+  wood=mix(wood,wood*vec3(1.25,1.08,.92),smoothstep(.62,.85,figure)*.5);
+  wood=mix(wood,wMid,smoothW*.6);                        // refine toward metal era
+  /* soft ambient occlusion: the thin neck sits in shadow under the collar */
+  float ao=.55+.45*clamp(rad/.42,0.,1.);
+  ao*=.8+.2*smoothstep(1.52,1.75,y)+.2*smoothstep(.0,.25,y);
+  ao=clamp(ao,.4,1.);
+  /* hemispheric fill + warm key, matte wood sheen */
+  float hemi=.5+.5*N.y;
+  vec3 amb=mix(vec3(.028,.024,.026),vec3(.115,.088,.07),hemi);
+  float spW=mix(16.,140.,smoothW);
+  float sheen=pow(max(dot(N,H),0.),spW);
+  vec3 woodLit=wood*(amb*1.15+dif*vec3(1.,.83,.6)*1.5+dif2*vec3(.35,.45,.7)*.14)*ao
+              +vec3(1.,.88,.66)*sheen*mix(.09,.5,smoothW)*(.5+.5*ao)
+              +wood*fres*vec3(1.,.8,.58)*.28;             // warm waxed rim
 
   /* glowing cracks + faint inner glow (10-20%) */
   float cr=abs(fbm(vObj*vec3(5.,3.,5.)+3.)-.47);
@@ -678,6 +736,48 @@ cone.position.y=3.5;cone.renderOrder=2;scene.add(cone);
 const boardMat=new THREE.ShaderMaterial({uniforms:{uTime:U.uTime,uP:U.uP,uIntro:U.uIntro,uPulseR:U.uPulseR,uPulseA:U.uPulseA,uQuiet:U.uQuiet,
   uFogColor:U.uFogColor,uFogDens:U.uFogDens,uPings:U.uPings},vertexShader:BOARD_V,fragmentShader:BOARD_F,transparent:true,depthWrite:false});
 const board=new THREE.Mesh(new THREE.PlaneGeometry(1400,1400),boardMat);board.rotation.x=-Math.PI/2;board.renderOrder=0;scene.add(board);
+
+/* India — the ground the pawn stands on (bright at the start, dissolves into the board) */
+function buildIndiaTexture(){
+  const W=1024,P=W*0.09,S=W-2*P;
+  const c=document.createElement('canvas');c.width=c.height=W;const x=c.getContext('2d');
+  // mainland outline, roughly traced (lon,lat), clockwise from the north
+  const pts=[[77,35.5],[78.6,34],[80,32],[81,30.3],[83.6,29],[86,28],[88,27.2],[89.8,26.7],
+    [92,27.6],[94.6,27.7],[97,28.3],[96,26.8],[97.2,25.3],[94.8,24],[93.6,22.6],[92.6,22],
+    [89.6,22],[88.2,21.6],[87,21.2],[85,19.6],[84,18.4],[82.6,17],[81,15.4],[80.3,13.4],
+    [79.9,11.7],[78.5,9.4],[77.5,8.08],[76.6,8.9],[75.2,12],[74.2,14.6],[73.3,16],[72.9,18],
+    [72.7,20],[72.9,21.2],[72,21.1],[70.5,20.8],[69.4,22.1],[68.3,22.5],[69,23.5],[68.4,23.8],
+    [70.6,24],[71,24.4],[70.2,27.8],[72,28],[73.8,30],[74.5,31.5],[75,32.6],[74,34],[76,35],[77,35.5]];
+  const lo0=67,lo1=98,la0=6,la1=37;
+  const px=p=>P+(p[0]-lo0)/(lo1-lo0)*S, py=p=>W-(P+(p[1]-la0)/(la1-la0)*S);
+  const trace=()=>{x.beginPath();x.moveTo(px(pts[0]),py(pts[0]));for(let i=1;i<pts.length;i++)x.lineTo(px(pts[i]),py(pts[i]));x.closePath();};
+  const cx=px([79,23]),cy=py([79,23]);
+  // soft landmass fill
+  trace();const g=x.createRadialGradient(cx,cy,0,cx,cy,S*0.6);
+  g.addColorStop(0,'rgba(255,165,70,0.42)');g.addColorStop(0.5,'rgba(220,120,40,0.20)');g.addColorStop(1,'rgba(120,60,25,0.06)');
+  x.fillStyle=g;x.fill();
+  // inner chess-style grid, clipped to India
+  x.save();trace();x.clip();
+  x.strokeStyle='rgba(255,180,90,0.16)';x.lineWidth=2;
+  for(let i=0;i<=16;i++){const t=P+i/16*S;x.beginPath();x.moveTo(t,0);x.lineTo(t,W);x.moveTo(0,t);x.lineTo(W,t);x.stroke();}
+  x.restore();
+  // glowing coastline
+  x.shadowColor='rgba(255,170,70,0.9)';x.shadowBlur=26;
+  x.strokeStyle='rgba(255,205,135,0.95)';x.lineWidth=5;trace();x.stroke();
+  x.shadowBlur=12;x.lineWidth=2.5;x.strokeStyle='rgba(255,235,205,0.9)';x.stroke();
+  // the spot the pawn stands on
+  x.shadowBlur=34;x.fillStyle='rgba(255,230,190,1)';x.beginPath();x.arc(cx,cy,9,0,6.2832);x.fill();
+  x.shadowBlur=60;x.fillStyle='rgba(255,170,70,0.55)';x.beginPath();x.arc(cx,cy,22,0,6.2832);x.fill();
+  const tex=new THREE.CanvasTexture(c);tex.anisotropy=4;return tex;
+}
+const MAP_V='varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
+const MAP_F='uniform sampler2D uTex;uniform float uTime,uP,uIntro;varying vec2 vUv;'+
+  'void main(){vec4 t=texture2D(uTex,vUv);float pulse=.86+.14*sin(uTime*1.2);'+
+  'float fade=uIntro*(1.-smoothstep(.14,.36,uP));gl_FragColor=vec4(t.rgb*pulse,t.a*fade);}';
+const indiaMat=new THREE.ShaderMaterial({uniforms:{uTex:{value:buildIndiaTexture()},uTime:U.uTime,uP:U.uP,uIntro:U.uIntro},
+  vertexShader:MAP_V,fragmentShader:MAP_F,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+const india=new THREE.Mesh(new THREE.PlaneGeometry(24,24),indiaMat);
+india.rotation.x=-Math.PI/2;india.position.y=.04;india.renderOrder=1;scene.add(india);
 
 /* city */
 {const cells=[];const N=48;
