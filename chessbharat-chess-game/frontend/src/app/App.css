@@ -1,0 +1,59 @@
+/* ==========================================================================
+   App shell — top bar + main region.
+   ========================================================================== */
+
+.chessbharat-game .cb-app { position: relative; min-height: 420px; }
+
+.chessbharat-game .cb-skip {
+  position: absolute;
+  left: 50%;
+  top: -60px;
+  transform: translateX(-50%);
+  z-index: var(--cb-z-modal);
+  background: var(--cb-saffron);
+  color: var(--cb-saffron-ink);
+  font-weight: 700;
+  font-size: var(--cb-fs-sm);
+  padding: 8px 16px;
+  border-radius: var(--cb-radius-pill);
+  transition: top var(--cb-dur) var(--cb-ease);
+}
+.chessbharat-game .cb-skip:focus { top: 12px; }
+
+.chessbharat-game .cb-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--cb-z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cb-space-3);
+  padding: var(--cb-space-3) var(--cb-gutter);
+  background: var(--cb-glass);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--cb-line);
+}
+.chessbharat-game .cb-topbar__brand { display: inline-flex; border-radius: var(--cb-radius-sm); }
+.chessbharat-game .cb-topbar__tag {
+  font-family: var(--cb-ff-mono);
+  font-size: var(--cb-fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cb-ink-faint);
+}
+@media (max-width: 520px) { .chessbharat-game .cb-topbar__tag { display: none; } }
+
+/* ---- Brand lockup (logo + wordmark) ------------------------------------ */
+.chessbharat-game .cb-brand { display: inline-flex; align-items: center; gap: 10px; }
+.chessbharat-game .cb-mark { filter: drop-shadow(0 0 10px rgba(255, 157, 46, 0.35)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)); }
+.chessbharat-game .cb-wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 0.92;
+  font-family: var(--cb-ff-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  color: var(--cb-ink);
+}
+.chessbharat-game .cb-wordmark b { font-weight: 600; color: var(--cb-saffron); }

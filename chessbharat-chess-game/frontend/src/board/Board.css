@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Chessboard — square, responsive, never overflows its container.
+   Sizing uses container-query units so pieces/coords scale with the board.
+   ========================================================================== */
+
+.chessbharat-game .cb-board-wrap {
+  width: 100%;
+}
+
+.chessbharat-game .cb-board {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--cb-radius);
+  overflow: hidden;
+  box-shadow: var(--cb-shadow-3), 0 0 0 1px var(--cb-line-strong);
+  user-select: none;
+  background: var(--cb-sq-dark);
+}
+
+.chessbharat-game .cb-sq {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-size: 11.6cqw;      /* piece glyph size relative to board width */
+  line-height: 1;
+  transition: background-color var(--cb-dur-fast) var(--cb-ease);
+}
+.chessbharat-game button.cb-sq { cursor: pointer; }
+.chessbharat-game button.cb-sq:focus-visible {
+  outline: 2px solid var(--cb-cyan);
+  outline-offset: -3px;
+  z-index: 3;
+}
+
+.chessbharat-game .cb-sq--light { background: var(--cb-sq-light); }
+.chessbharat-game .cb-sq--dark  { background: var(--cb-sq-dark); }
+
+/* Last move — a saffron wash on both origin and destination. */
+.chessbharat-game .cb-sq.is-last::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--cb-last-move);
+  pointer-events: none;
+}
+
+/* Selected square — unmistakable warm highlight. */
+.chessbharat-game .cb-sq.is-selected.cb-sq--light { background: var(--cb-sq-light-sel); }
+.chessbharat-game .cb-sq.is-selected.cb-sq--dark  { background: var(--cb-sq-dark-sel); }
+.chessbharat-game .cb-sq.is-selected {
+  box-shadow: inset 0 0 0 3px var(--cb-saffron);
+  z-index: 2;
+}
+
+/* King in check — clear red highlight (not colour alone: piece + radial). */
+.chessbharat-game .cb-sq.is-check::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, var(--cb-check) 0%, rgba(217,107,95,0.35) 55%, transparent 72%);
+  pointer-events: none;
+}
+
+/* Piece glyphs — one cohesive solid set, coloured per side. */
+.chessbharat-game .cb-piece {
+  position: relative;
+  z-index: 1;
+  display: block;
+  line-height: 1;
+  pointer-events: none;
+  text-align: center;
+}
+.chessbharat-game .cb-piece--w {
+  color: var(--cb-piece-light);
+  text-shadow:
+    0 0 1px var(--cb-piece-dark-edge),
+    0.6px 0 var(--cb-piece-dark-edge), -0.6px 0 var(--cb-piece-dark-edge),
+    0 0.6px var(--cb-piece-dark-edge), 0 -0.6px var(--cb-piece-dark-edge),
+    0 2px 3px rgba(0, 0, 0, 0.45);
+}
+.chessbharat-game .cb-piece--b {
+  color: var(--cb-piece-dark);
+  text-shadow:
+    0.5px 0 var(--cb-piece-light-edge), -0.5px 0 var(--cb-piece-light-edge),
+    0 0.5px var(--cb-piece-light-edge), 0 -0.5px var(--cb-piece-light-edge),
+    0 2px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Legal-move markers. */
+.chessbharat-game .cb-move-dot {
+  position: absolute;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: var(--cb-legal);
+  pointer-events: none;
+}
+.chessbharat-game .cb-move-ring {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  border: 0.9cqw solid var(--cb-legal-capture);
+  pointer-events: none;
+}
+
+/* Coordinates — subtle, legible, in-corner. */
+.chessbharat-game .cb-coord {
+  position: absolute;
+  font-family: var(--cb-ff-mono);
+  font-size: 2.6cqw;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--cb-coord);
+  pointer-events: none;
+}
+.chessbharat-game .cb-sq--dark .cb-coord { color: rgba(231, 220, 196, 0.7); }
+.chessbharat-game .cb-coord--file { right: 4%; bottom: 3%; }
+.chessbharat-game .cb-coord--rank { left: 4%; top: 3%; }
+
+.chessbharat-game .cb-sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}

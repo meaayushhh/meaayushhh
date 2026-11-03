@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>ChessBharat Chess Game — Dev Preview</title>
+    <style>
+      /* Dev-only host page. In production the plugin renders the mount node
+         via the [chessbharat_game] shortcode; this file is NOT shipped. */
+      html, body { margin: 0; background: #04050a; }
+    </style>
+  </head>
+  <body>
+    <!-- Mirrors the markup emitted by the WordPress shortcode. -->
+    <div class="chessbharat-game" data-chessbharat-root>
+      <noscript>This chess game requires JavaScript to play.</noscript>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

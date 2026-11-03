@@ -1,0 +1,13 @@
+# Node / frontend build tooling (source is committed; node_modules is not)
+frontend/node_modules/
+frontend/.vite/
+frontend/*.tsbuildinfo
+frontend/node_modules/.tmp/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
+
+# The compiled bundle in assets/dist IS committed (prod needs no build step),
+# so it is intentionally NOT ignored.

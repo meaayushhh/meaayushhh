@@ -1,0 +1,182 @@
+/* ==========================================================================
+   Shared UI primitives — buttons, chips, badges, portraits, modal.
+   All scoped under .chessbharat-game.
+   ========================================================================== */
+
+/* ---- Eyebrow / section label ------------------------------------------- */
+.chessbharat-game .cb-eyebrow {
+  font-family: var(--cb-ff-mono);
+  font-size: var(--cb-fs-xs);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cb-saffron);
+  margin-bottom: var(--cb-space-2);
+}
+
+/* ---- Buttons ------------------------------------------------------------ */
+.chessbharat-game .cb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cb-space-2);
+  min-height: 44px;
+  padding: 0 var(--cb-space-5);
+  border-radius: var(--cb-radius-pill);
+  font-weight: 600;
+  font-size: var(--cb-fs-base);
+  letter-spacing: 0.01em;
+  border: 1px solid var(--cb-line-strong);
+  background: var(--cb-surface-2);
+  color: var(--cb-ink);
+  transition: transform var(--cb-dur-fast) var(--cb-ease),
+    box-shadow var(--cb-dur) var(--cb-ease),
+    background-color var(--cb-dur) var(--cb-ease),
+    border-color var(--cb-dur) var(--cb-ease);
+}
+.chessbharat-game .cb-btn:hover { border-color: var(--cb-cyan); box-shadow: var(--cb-glow-cyan); }
+.chessbharat-game .cb-btn:active { transform: translateY(1px); }
+.chessbharat-game .cb-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+.chessbharat-game .cb-btn--primary {
+  background: var(--cb-saffron);
+  border-color: var(--cb-saffron);
+  color: var(--cb-saffron-ink);
+}
+.chessbharat-game .cb-btn--primary:hover { box-shadow: var(--cb-glow-saffron); border-color: var(--cb-saffron); }
+
+.chessbharat-game .cb-btn--ghost {
+  background: transparent;
+  border-color: var(--cb-line-strong);
+}
+.chessbharat-game .cb-btn--danger {
+  background: transparent;
+  border-color: rgba(255, 106, 92, 0.6);
+  color: var(--cb-danger);
+}
+.chessbharat-game .cb-btn--danger:hover {
+  background: rgba(255, 106, 92, 0.12);
+  border-color: var(--cb-danger);
+  box-shadow: 0 0 22px rgba(255, 106, 92, 0.22);
+}
+.chessbharat-game .cb-btn--sm { min-height: 36px; padding: 0 var(--cb-space-3); font-size: var(--cb-fs-sm); }
+
+/* ---- Chips (filters) ---------------------------------------------------- */
+.chessbharat-game .cb-chip {
+  min-height: 38px;
+  padding: 0 var(--cb-space-4);
+  border-radius: var(--cb-radius-pill);
+  font-size: var(--cb-fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--cb-ink-dim);
+  border: 1px solid var(--cb-line);
+  background: var(--cb-surface);
+  transition: color var(--cb-dur) var(--cb-ease), border-color var(--cb-dur) var(--cb-ease),
+    background-color var(--cb-dur) var(--cb-ease);
+}
+.chessbharat-game .cb-chip:hover { color: var(--cb-ink); border-color: var(--cb-line-strong); }
+.chessbharat-game .cb-chip.is-active {
+  color: var(--cb-saffron-ink);
+  background: var(--cb-saffron);
+  border-color: var(--cb-saffron);
+}
+
+/* ---- Difficulty badge --------------------------------------------------- */
+.chessbharat-game .cb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--cb-radius-pill);
+  font-size: var(--cb-fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cb-ink);
+  background: var(--cb-surface-3);
+  border: 1px solid var(--cb-line);
+}
+.chessbharat-game .cb-badge::before {
+  content: "";
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--cb-diff-beginner);
+}
+.chessbharat-game .cb-badge[data-difficulty="beginner"]::before { background: var(--cb-diff-beginner); }
+.chessbharat-game .cb-badge[data-difficulty="intermediate"]::before { background: var(--cb-diff-intermediate); }
+.chessbharat-game .cb-badge[data-difficulty="advanced"]::before { background: var(--cb-diff-advanced); }
+.chessbharat-game .cb-badge[data-difficulty="expert"]::before { background: var(--cb-diff-expert); }
+
+/* ---- Portrait ----------------------------------------------------------- */
+.chessbharat-game .cb-portrait {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--cb-radius);
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--cb-portrait-accent) 26%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--cb-surface-3), var(--cb-surface));
+  border: 1px solid var(--cb-line);
+}
+.chessbharat-game .cb-portrait img { width: 100%; height: 100%; object-fit: cover; }
+.chessbharat-game .cb-portrait--card { aspect-ratio: 4 / 3; width: 100%; }
+.chessbharat-game .cb-portrait--header { width: 64px; height: 64px; border-radius: 50%; flex: none; }
+.chessbharat-game .cb-portrait--result { width: 96px; height: 96px; border-radius: 50%; }
+
+.chessbharat-game .cb-portrait__ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.chessbharat-game .cb-portrait__initials {
+  font-family: var(--cb-ff-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 8cqw, 2.6rem);
+  color: var(--cb-ink);
+  opacity: 0.9;
+  letter-spacing: 0.02em;
+}
+.chessbharat-game .cb-portrait--header .cb-portrait__initials { font-size: 1.25rem; }
+.chessbharat-game .cb-portrait--result .cb-portrait__initials { font-size: 2rem; }
+.chessbharat-game .cb-portrait__badge {
+  font-family: var(--cb-ff-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cb-ink-faint);
+  background: var(--cb-scrim);
+  padding: 2px 7px;
+  border-radius: var(--cb-radius-pill);
+  border: 1px solid var(--cb-line);
+}
+.chessbharat-game .cb-portrait--header .cb-portrait__badge,
+.chessbharat-game .cb-portrait--result .cb-portrait__badge { display: none; }
+
+/* ---- Modal / dialog scrim ---------------------------------------------- */
+.chessbharat-game .cb-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--cb-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cb-gutter);
+  background: var(--cb-scrim);
+  backdrop-filter: blur(3px);
+  animation: cb-fade var(--cb-dur) var(--cb-ease);
+}
+@keyframes cb-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.chessbharat-game .cb-modal {
+  width: min(440px, 100%);
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-line-strong);
+  border-radius: var(--cb-radius-lg);
+  padding: var(--cb-space-6);
+  box-shadow: var(--cb-shadow-3);
+}
+.chessbharat-game .cb-modal__title { font-size: var(--cb-fs-lg); margin-bottom: var(--cb-space-3); }
+.chessbharat-game .cb-modal__body { color: var(--cb-ink-dim); margin-bottom: var(--cb-space-5); }
+.chessbharat-game .cb-modal__actions { display: flex; gap: var(--cb-space-3); justify-content: flex-end; }
