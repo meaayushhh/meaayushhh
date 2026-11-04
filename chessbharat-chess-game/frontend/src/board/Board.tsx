@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, type DragEvent } from 'react';
 import {
   parseFenPlacement,
   squaresInOrder,
@@ -24,9 +24,12 @@ export interface BoardProps {
   selected?: Square | null;
   legalTargets?: LegalTarget[];
   showCoordinates?: boolean;
-  /** Visual selection callback (Phase 1). Real move legality arrives in Phase 2. */
-  onSquareClick?: (square: Square) => void;
   interactive?: boolean;
+  /** Which colour the human may pick up (for drag affordances). */
+  draggableColor?: PieceColor | 'both';
+  onSquareClick?: (square: Square) => void;
+  onDrop?: (from: Square, to: Square) => void;
+  onDragStartSquare?: (square: Square) => void;
 }
 
 export function Board({
@@ -37,8 +40,11 @@ export function Board({
   selected = null,
   legalTargets = [],
   showCoordinates = true,
-  onSquareClick,
   interactive = false,
+  draggableColor = 'both',
+  onSquareClick,
+  onDrop,
+  onDragStartSquare,
 }: BoardProps) {
   const pieces = useMemo(() => parseFenPlacement(fen), [fen]);
   const order = useMemo(() => squaresInOrder(orientation), [orientation]);
@@ -48,22 +54,25 @@ export function Board({
     return m;
   }, [legalTargets]);
 
+  const [dragOver, setDragOver] = useState<Square | null>(null);
+
   const edgeFiles = orientation === 'w' ? FILES : [...FILES].reverse();
   const edgeRanks = orientation === 'w' ? RANKS : [...RANKS].reverse();
 
+  function canDrag(sq: Square): boolean {
+    if (!interactive || !onDrop) return false;
+    const p = pieces.get(sq);
+    if (!p) return false;
+    return draggableColor === 'both' || draggableColor === p.color;
+  }
+
   return (
     <div className="cb-board-wrap">
-      <div
-        className="cb-board"
-        role="grid"
-        aria-label="Chessboard"
-        data-orientation={orientation}
-      >
+      <div className="cb-board" role="grid" aria-label="Chessboard" data-orientation={orientation}>
         {order.map((square) => {
           const piece = pieces.get(square);
           const light = isLightSquare(square);
-          const isLast =
-            lastMove && (lastMove.from === square || lastMove.to === square);
+          const isLast = lastMove && (lastMove.from === square || lastMove.to === square);
           const isCheck = checkSquare === square;
           const isSelected = selected === square;
           const legal = legalMap.has(square);
@@ -75,30 +84,48 @@ export function Board({
             isLast ? 'is-last' : '',
             isCheck ? 'is-check' : '',
             isSelected ? 'is-selected' : '',
-          ]
-            .filter(Boolean)
-            .join(' ');
+            dragOver === square ? 'is-dragover' : '',
+          ].filter(Boolean).join(' ');
 
           const fileIdx = FILES.indexOf(square[0] as (typeof FILES)[number]);
-          const isBottomRow =
-            orientation === 'w' ? square[1] === '1' : square[1] === '8';
-          const isLeftCol =
-            orientation === 'w' ? fileIdx === 0 : fileIdx === 7;
+          const isBottomRow = orientation === 'w' ? square[1] === '1' : square[1] === '8';
+          const isLeftCol = orientation === 'w' ? fileIdx === 0 : fileIdx === 7;
+
+          const dropHandlers = interactive && onDrop
+            ? {
+                onDragOver: (e: DragEvent) => { e.preventDefault(); setDragOver(square); },
+                onDragLeave: () => setDragOver((cur) => (cur === square ? null : cur)),
+                onDrop: (e: DragEvent) => {
+                  e.preventDefault();
+                  const from = e.dataTransfer.getData('text/plain') as Square;
+                  setDragOver(null);
+                  if (from && from !== square) onDrop(from, square);
+                },
+              }
+            : {};
 
           const content = (
             <>
               {legal && !legalCapture && <span className="cb-move-dot" aria-hidden="true" />}
               {legalCapture && <span className="cb-move-ring" aria-hidden="true" />}
-              {piece && <PieceGlyph piece={piece} />}
-              {showCoordinates && isBottomRow && (
-                <span className="cb-coord cb-coord--file" aria-hidden="true">
-                  {square[0]}
+              {piece && (
+                <span
+                  className="cb-piece-drag"
+                  draggable={canDrag(square)}
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('text/plain', square);
+                    e.dataTransfer.effectAllowed = 'move';
+                    onDragStartSquare?.(square);
+                  }}
+                >
+                  <PieceGlyph piece={piece} />
                 </span>
               )}
+              {showCoordinates && isBottomRow && (
+                <span className="cb-coord cb-coord--file" aria-hidden="true">{square[0]}</span>
+              )}
               {showCoordinates && isLeftCol && (
-                <span className="cb-coord cb-coord--rank" aria-hidden="true">
-                  {square[1]}
-                </span>
+                <span className="cb-coord cb-coord--rank" aria-hidden="true">{square[1]}</span>
               )}
             </>
           );
@@ -117,28 +144,18 @@ export function Board({
               aria-label={describe}
               aria-pressed={isSelected}
               onClick={() => onSquareClick?.(square)}
+              {...dropHandlers}
             >
               {content}
             </button>
           ) : (
-            <div
-              key={square}
-              role="gridcell"
-              className={classes}
-              data-square={square}
-              aria-label={describe}
-            >
+            <div key={square} role="gridcell" className={classes} data-square={square} aria-label={describe}>
               {content}
             </div>
           );
         })}
       </div>
-
-      {/* Visually-hidden coordinate rails are already drawn inside squares;
-          the edge arrays above keep file/rank ordering honest for a11y tools. */}
-      <span className="cb-sr-only">
-        Files {edgeFiles.join(' ')}, ranks {edgeRanks.join(' ')}.
-      </span>
+      <span className="cb-sr-only">Files {edgeFiles.join(' ')}, ranks {edgeRanks.join(' ')}.</span>
     </div>
   );
 }

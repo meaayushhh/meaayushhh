@@ -1,35 +1,21 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Board } from '../board/Board';
 import { Portrait } from '../components/Portrait';
 import { ConfirmModal } from '../components/Modal';
+import { PromotionPanel } from '../components/PromotionPanel';
+import { ResultOverlay } from '../components/ResultOverlay';
 import { DIFFICULTY_META } from '../opponents/types';
+import { useChessGame, type GameOutcome } from '../game/useChessGame';
+import { useClock, formatClock } from '../game/useClock';
+import { pickRandomMove } from '../game/tempOpponent';
+import { materialFromFen } from '../utils/material';
+import { playCue } from '../utils/sound';
+import { downloadPgn } from '../utils/pgn';
 import type { GameSetup } from '../app/types';
-import type { PieceColor, Square } from '../utils/fen';
+import type { PieceColor, PieceType } from '../utils/fen';
 import './GameScreen.css';
 
-/**
- * PHASE 1 — static visual prototype of the play environment.
- *
- * This screen demonstrates layout, hierarchy and brand at the intended
- * quality. It is NOT yet a playable game: the position, clocks, captured
- * pieces and move list are representative sample data, and clicking a square
- * only shows the selection highlight. Real rules (chess.js) arrive in Phase 2
- * and the engine in Phase 3. Controls that would be destructive already
- * confirm, and nothing here fakes a completed or in-progress result.
- */
-
-// Sample position: Italian Game, Giuoco Pianissimo — after 5...d6.
-const SAMPLE_FEN = 'r1bqk2r/ppp2ppp/2np1n2/2b1p3/2B1P3/2PP1N2/PP3PPP/RNBQK2R w KQkq - 0 6';
-const SAMPLE_LAST = { from: 'd2' as Square, to: 'd3' as Square };
-
-// Representative move list (SAN). Phase 2 generates this from real play.
-const SAMPLE_MOVES: [string, string][] = [
-  ['e4', 'e5'],
-  ['Nf3', 'Nc6'],
-  ['Bc4', 'Bc5'],
-  ['c3', 'Nf6'],
-  ['d3', ''],
-];
+const CAP_GLYPH: Record<string, string> = { p: '♟', n: '♞', b: '♝', r: '♜', q: '♛' };
 
 export function GameScreen({
   setup,
@@ -43,33 +29,125 @@ export function GameScreen({
   onExit: () => void;
 }) {
   const { opponent, timeControl, playerColor, casual } = setup;
+  const oppColor: PieceColor = playerColor === 'w' ? 'b' : 'w';
+
+  const game = useChessGame();
   const [orientation, setOrientation] = useState<PieceColor>(playerColor);
-  const [selected, setSelected] = useState<Square | null>(null);
   const [soundOn, setSoundOn] = useState(true);
   const [showCoords, setShowCoords] = useState(showCoordinatesDefault);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [confirm, setConfirm] = useState<null | 'resign' | 'newgame'>(null);
+  const [confirm, setConfirm] = useState<null | 'resign' | 'newgame' | 'draw'>(null);
+  const [thinking, setThinking] = useState(false);
+  const [manualEnd, setManualEnd] = useState<GameOutcome | null>(null);
+  const [startedAt, setStartedAt] = useState(() => Date.now());
+  const [endedAt, setEndedAt] = useState<number | null>(null);
 
-  const initialClock = useMemo(
-    () => (timeControl.baseMinutes == null ? '—:—' : `${timeControl.baseMinutes}:00`),
-    [timeControl],
+  const ended: GameOutcome = manualEnd ?? game.outcome;
+  const isOver = ended.over;
+
+  const baseMs = timeControl.baseMinutes == null ? null : timeControl.baseMinutes * 60000;
+  const incMs = timeControl.incrementSeconds * 1000;
+
+  const handleFlag = useCallback(
+    (loser: PieceColor) => {
+      setManualEnd({ over: true, kind: 'checkmate', winner: loser === 'w' ? 'b' : 'w', reason: 'Out of time' });
+    },
+    [],
   );
 
-  // Sample legal targets for the selected square (visual demo only).
-  const legalTargets = selected
-    ? [
-        { to: 'e6' as Square, isCapture: false },
-        { to: 'd5' as Square, isCapture: false },
-      ]
-    : [];
+  const { clock, applyIncrement, reset: resetClock } = useClock({
+    baseMs,
+    incrementMs: incMs,
+    activeColor: game.turn,
+    running: !isOver && !game.promotion,
+    onFlag: handleFlag,
+  });
 
-  const opponentLabel = playerColor === 'w' ? 'Black' : 'White';
-  const playerLabel = playerColor === 'w' ? 'White' : 'Black';
+  // Record the end timestamp once.
+  useEffect(() => {
+    if (isOver && endedAt == null) setEndedAt(Date.now());
+  }, [isOver, endedAt]);
+
+  // Per-move side effects: increment, sound.
+  const prevPly = useRef(0);
+  useEffect(() => {
+    if (game.plyCount > prevPly.current) {
+      const mover: PieceColor = game.turn === 'w' ? 'b' : 'w';
+      applyIncrement(mover);
+      const pairs = game.movePairs;
+      const lastPair = pairs[pairs.length - 1];
+      const lastSan = lastPair ? (lastPair.black ?? lastPair.white) : null;
+      if (game.outcome.over) playCue('end', soundOn);
+      else if (game.inCheck || lastSan?.includes('+')) playCue('check', soundOn);
+      else if (lastSan?.includes('x')) playCue('capture', soundOn);
+      else playCue('move', soundOn);
+    }
+    prevPly.current = game.plyCount;
+  }, [game.plyCount, game.turn, game.movePairs, game.inCheck, game.outcome.over, applyIncrement, soundOn]);
+
+  useEffect(() => {
+    if (manualEnd && !game.outcome.over) playCue('end', soundOn);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [manualEnd]);
+
+  // Temporary opponent (random legal move). Replaced by Stockfish in Phase 3.
+  useEffect(() => {
+    if (isOver || game.promotion) return;
+    if (game.turn === playerColor) return;
+    setThinking(true);
+    const legal = game.legalMoves();
+    const move = pickRandomMove(legal);
+    const delay = 420 + Math.random() * 520;
+    const t = setTimeout(() => {
+      setThinking(false);
+      if (move) game.applyMove(move);
+    }, delay);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game.turn, game.fen, isOver, game.promotion, playerColor]);
+
+  const material = useMemo(() => materialFromFen(game.fen), [game.fen]);
+
+  const dialogue = useMemo(() => {
+    const pick = (arr?: string[]) => (arr && arr.length ? arr[game.plyCount % arr.length] : undefined);
+    if (isOver) {
+      if (ended.winner && ended.winner === oppColor) return pick(opponent.dialogue.victory) ?? opponent.signatureLine;
+      if (ended.winner === playerColor) return pick(opponent.dialogue.defeat) ?? 'Well played.';
+      return pick(opponent.dialogue.draw) ?? opponent.signatureLine;
+    }
+    if (game.inCheck && game.turn === playerColor) return pick(opponent.dialogue.check) ?? opponent.signatureLine;
+    if (game.plyCount === 0) return pick(opponent.dialogue.gameStart) ?? opponent.signatureLine;
+    return opponent.signatureLine;
+  }, [isOver, ended, oppColor, playerColor, game.inCheck, game.turn, game.plyCount, opponent]);
+
+  const movesEndRef = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    movesEndRef.current?.scrollTo({ top: movesEndRef.current.scrollHeight });
+  }, [game.plyCount]);
+
+  const startFresh = useCallback(() => {
+    game.reset();
+    resetClock();
+    setManualEnd(null);
+    setThinking(false);
+    setStartedAt(Date.now());
+    setEndedAt(null);
+    prevPly.current = 0;
+  }, [game, resetClock]);
+
+  const moveCount = Math.ceil(game.plyCount / 2);
+  const durationMs = (endedAt ?? Date.now()) - startedAt;
+
+  const playerClockMs = playerColor === 'w' ? clock.whiteMs : clock.blackMs;
+  const oppClockMs = oppColor === 'w' ? clock.whiteMs : clock.blackMs;
+  const playerCaptured = playerColor === 'w' ? material.capturedByWhite : material.capturedByBlack;
+  const oppCaptured = oppColor === 'w' ? material.capturedByWhite : material.capturedByBlack;
+  const playerAdv = playerColor === 'w' ? material.diff : -material.diff;
+  const oppAdv = -playerAdv;
 
   return (
     <section className="cb-game" aria-label={`Game against ${opponent.name}`}>
       <div className="cb-game__main">
-        {/* Opponent header */}
         <header className="cb-opp" aria-label="Opponent">
           <Portrait opponent={opponent} imageBase={portraitsBase} size="header" />
           <div className="cb-opp__meta">
@@ -79,88 +157,101 @@ export function GameScreen({
                 {DIFFICULTY_META[opponent.difficulty].label} · {opponent.ratingLabel}
               </span>
             </div>
-            <p className="cb-opp__say" aria-live="polite">“{opponent.signatureLine}”</p>
+            {thinking ? (
+              <p className="cb-opp__say" aria-live="polite">
+                <span className="cb-think" aria-hidden="true"><i /><i /><i /></span>
+                <span className="cb-think__label">Thinking…</span>
+              </p>
+            ) : (
+              <p className="cb-opp__say" aria-live="polite">“{dialogue}”</p>
+            )}
           </div>
-          <span className="cb-think" hidden aria-hidden="true">
-            <i /><i /><i />
-          </span>
         </header>
 
-        {/* Opponent info bar */}
         <PlayerBar
-          side={opponentLabel}
-          clock={initialClock}
-          captured={['p', 'p']}
+          side={oppColor === 'w' ? 'White' : 'Black'}
+          clock={formatClock(baseMs == null ? null : oppClockMs)}
+          active={!isOver && game.turn === oppColor}
+          captured={oppCaptured}
           capturedColor={playerColor}
-          material={0}
+          advantage={oppAdv}
         />
 
-        {/* Board */}
         <div className="cb-game__board">
-          <Board
-            fen={SAMPLE_FEN}
-            orientation={orientation}
-            lastMove={SAMPLE_LAST}
-            selected={selected}
-            legalTargets={legalTargets}
-            showCoordinates={showCoords}
-            interactive
-            onSquareClick={(sq) => setSelected((cur) => (cur === sq ? null : sq))}
-          />
+          <div className="cb-board-stage">
+            <Board
+              fen={game.fen}
+              orientation={orientation}
+              lastMove={game.lastMove}
+              checkSquare={game.checkSquare}
+              selected={game.selected}
+              legalTargets={game.legalTargets}
+              showCoordinates={showCoords}
+              interactive={!isOver}
+              draggableColor={playerColor}
+              onSquareClick={(sq) => game.tapSquare(sq, playerColor)}
+              onDrop={(from, to) => { game.dropPiece(from, to, playerColor); }}
+              onDragStartSquare={(sq) => { if (game.selected !== sq) game.tapSquare(sq, playerColor); }}
+            />
+            {game.promotion && (
+              <PromotionPanel
+                color={game.promotion.color}
+                onChoose={(p) => game.choosePromotion(p)}
+                onCancel={() => game.cancelPromotion()}
+              />
+            )}
+          </div>
         </div>
 
-        {/* Player info bar */}
         <PlayerBar
-          side={`You · ${playerLabel}`}
-          clock={initialClock}
-          captured={['n']}
-          capturedColor={playerColor === 'w' ? 'b' : 'w'}
-          material={0}
+          side={`You · ${playerColor === 'w' ? 'White' : 'Black'}`}
+          clock={formatClock(baseMs == null ? null : playerClockMs)}
+          active={!isOver && game.turn === playerColor}
+          captured={playerCaptured}
+          capturedColor={oppColor}
+          advantage={playerAdv}
           you
         />
       </div>
 
-      {/* Side panel: move history + controls */}
       <aside className="cb-side" aria-label="Game panel">
         <div className="cb-movehist">
           <h3 className="cb-panel__title">Moves</h3>
-          <ol className="cb-moves cb-tnum" aria-label="Move history">
-            {SAMPLE_MOVES.map(([w, b], i) => {
-              const isCurrent = i === SAMPLE_MOVES.length - 1;
-              return (
-                <li key={i} className={isCurrent ? 'is-current' : ''}>
-                  <span className="cb-moves__no">{i + 1}.</span>
-                  <span className="cb-moves__ply">{w}</span>
-                  <span className="cb-moves__ply">{b}</span>
-                </li>
-              );
-            })}
-          </ol>
-          <p className="cb-prototype-note">Sample game · live play begins in Phase 2</p>
+          {game.movePairs.length === 0 ? (
+            <p className="cb-prototype-note">No moves yet — you play {playerColor === 'w' ? 'White' : 'Black'}.</p>
+          ) : (
+            <ol className="cb-moves cb-tnum" aria-label="Move history" ref={movesEndRef}>
+              {game.movePairs.map((p) => {
+                const isCurrent = p.number === game.movePairs.length;
+                return (
+                  <li key={p.number} className={isCurrent ? 'is-current' : ''}>
+                    <span className="cb-moves__no">{p.number}.</span>
+                    <span className="cb-moves__ply">{p.white ?? ''}</span>
+                    <span className="cb-moves__ply">{p.black ?? ''}</span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
         </div>
 
         <div className="cb-controls" role="group" aria-label="Game controls">
-          <button className="cb-btn cb-btn--ghost cb-btn--sm" onClick={() => setConfirm('newgame')}>
-            New game
-          </button>
-          <button className="cb-btn cb-btn--ghost cb-btn--sm" onClick={() => setOrientation((o) => (o === 'w' ? 'b' : 'w'))}>
-            Flip board
-          </button>
-          <button className="cb-btn cb-btn--ghost cb-btn--sm" disabled={!casual} title={casual ? 'Undo your last move' : 'Undo is available in casual (unlimited) games only'}>
+          <button className="cb-btn cb-btn--ghost cb-btn--sm" onClick={() => setConfirm('newgame')}>New game</button>
+          <button className="cb-btn cb-btn--ghost cb-btn--sm" onClick={() => setOrientation((o) => (o === 'w' ? 'b' : 'w'))}>Flip board</button>
+          <button
+            className="cb-btn cb-btn--ghost cb-btn--sm"
+            disabled={!casual || thinking || isOver || game.plyCount < 2}
+            title={casual ? 'Undo your last move' : 'Undo is available in casual (unlimited) games only'}
+            onClick={() => game.undoPair(playerColor)}
+          >
             Undo
           </button>
           <button className="cb-btn cb-btn--ghost cb-btn--sm" aria-pressed={soundOn} onClick={() => setSoundOn((s) => !s)}>
             Sound: {soundOn ? 'On' : 'Off'}
           </button>
-          <button className="cb-btn cb-btn--ghost cb-btn--sm" onClick={() => setSettingsOpen((v) => !v)} aria-expanded={settingsOpen}>
-            Settings
-          </button>
-          <button className="cb-btn cb-btn--ghost cb-btn--sm" disabled title="Offer a draw (enabled in Phase 2)">
-            Offer draw
-          </button>
-          <button className="cb-btn cb-btn--danger cb-btn--sm cb-controls__resign" onClick={() => setConfirm('resign')}>
-            Resign
-          </button>
+          <button className="cb-btn cb-btn--ghost cb-btn--sm" onClick={() => setSettingsOpen((v) => !v)} aria-expanded={settingsOpen}>Settings</button>
+          <button className="cb-btn cb-btn--ghost cb-btn--sm" disabled={isOver} onClick={() => setConfirm('draw')}>Offer draw</button>
+          <button className="cb-btn cb-btn--danger cb-btn--sm cb-controls__resign" disabled={isOver} onClick={() => setConfirm('resign')}>Resign</button>
         </div>
 
         {settingsOpen && (
@@ -176,11 +267,11 @@ export function GameScreen({
       <ConfirmModal
         open={confirm === 'resign'}
         title="Resign this game?"
-        body="You’ll forfeit the game and return to the result screen."
+        body="You’ll forfeit the game."
         confirmLabel="Resign"
         cancelLabel="Keep playing"
         tone="danger"
-        onConfirm={() => { setConfirm(null); onExit(); }}
+        onConfirm={() => { setConfirm(null); setManualEnd({ over: true, kind: 'checkmate', winner: oppColor, reason: 'You resigned' }); }}
         onCancel={() => setConfirm(null)}
       />
       <ConfirmModal
@@ -189,9 +280,32 @@ export function GameScreen({
         body="The current game will be discarded."
         confirmLabel="New game"
         cancelLabel="Cancel"
-        onConfirm={() => { setConfirm(null); onExit(); }}
+        onConfirm={() => { setConfirm(null); startFresh(); }}
         onCancel={() => setConfirm(null)}
       />
+      <ConfirmModal
+        open={confirm === 'draw'}
+        title="Offer a draw?"
+        body="For this prototype the opponent accepts. Personality-based draw decisions arrive with the real engine (Phase 4)."
+        confirmLabel="Offer draw"
+        cancelLabel="Cancel"
+        onConfirm={() => { setConfirm(null); setManualEnd({ over: true, kind: 'draw', winner: null, reason: 'Draw agreed' }); }}
+        onCancel={() => setConfirm(null)}
+      />
+
+      {isOver && (
+        <ResultOverlay
+          outcome={ended}
+          humanColor={playerColor}
+          opponent={opponent}
+          portraitsBase={portraitsBase}
+          moveCount={moveCount}
+          durationMs={durationMs}
+          onPlayAgain={() => startFresh()}
+          onChooseAnother={onExit}
+          onDownloadPgn={() => downloadPgn(game.getPgn(), `chessbharat-vs-${opponent.id}`)}
+        />
+      )}
     </section>
   );
 }
@@ -199,31 +313,32 @@ export function GameScreen({
 function PlayerBar({
   side,
   clock,
+  active,
   captured,
   capturedColor,
-  material,
+  advantage,
   you = false,
 }: {
   side: string;
   clock: string;
-  captured: string[];
+  active: boolean;
+  captured: PieceType[];
   capturedColor: PieceColor;
-  material: number;
+  advantage: number;
   you?: boolean;
 }) {
-  const glyphs: Record<string, string> = { p: '♟', n: '♞', b: '♝', r: '♜', q: '♛' };
   return (
-    <div className={`cb-pbar ${you ? 'cb-pbar--you' : ''}`}>
+    <div className={`cb-pbar ${you ? 'cb-pbar--you' : ''} ${active ? 'is-active' : ''}`}>
       <div className="cb-pbar__left">
         <span className="cb-pbar__side">{side}</span>
         <span className="cb-captured" aria-label="Captured pieces">
           {captured.map((p, i) => (
-            <span key={i} className={`cb-cap cb-cap--${capturedColor}`} aria-hidden="true">{glyphs[p]}</span>
+            <span key={i} className={`cb-cap cb-cap--${capturedColor}`} aria-hidden="true">{CAP_GLYPH[p]}</span>
           ))}
-          {material > 0 && <span className="cb-material">+{material}</span>}
+          {advantage > 0 && <span className="cb-material">+{advantage}</span>}
         </span>
       </div>
-      <span className="cb-clock cb-tnum" aria-label={`${side} clock`}>{clock}</span>
+      <span className={`cb-clock cb-tnum ${active ? 'is-active' : ''}`} aria-label={`${side} clock`}>{clock}</span>
     </div>
   );
 }

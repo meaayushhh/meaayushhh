@@ -25,6 +25,73 @@
   max-width: min(72vh, 100%);
   margin: 0 auto;
 }
+.chessbharat-game .cb-board-stage { position: relative; }
+
+/* ---- Thinking label ----------------------------------------------------- */
+.chessbharat-game .cb-think__label { color: var(--cb-cyan); font-size: var(--cb-fs-sm); margin-left: 8px; vertical-align: middle; }
+
+/* ---- Promotion panel ---------------------------------------------------- */
+.chessbharat-game .cb-promo {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cb-scrim);
+  border-radius: var(--cb-radius);
+  backdrop-filter: blur(2px);
+}
+.chessbharat-game .cb-promo__panel {
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-line-strong);
+  border-radius: var(--cb-radius);
+  padding: var(--cb-space-4);
+  box-shadow: var(--cb-shadow-3);
+  text-align: center;
+  width: min(300px, 86%);
+}
+.chessbharat-game .cb-promo__title { font-size: var(--cb-fs-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--cb-ink-faint); margin-bottom: var(--cb-space-3); }
+.chessbharat-game .cb-promo__row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--cb-space-2); margin-bottom: var(--cb-space-3); }
+.chessbharat-game .cb-promo__btn {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; line-height: 1;
+  border-radius: var(--cb-radius-sm);
+  border: 1px solid var(--cb-line);
+  background: var(--cb-surface-2);
+  transition: border-color var(--cb-dur) var(--cb-ease), background-color var(--cb-dur) var(--cb-ease), transform var(--cb-dur-fast) var(--cb-ease);
+}
+.chessbharat-game .cb-promo__btn:hover { border-color: var(--cb-saffron); background: var(--cb-surface-3); transform: translateY(-2px); }
+.chessbharat-game .cb-promo__cancel { width: 100%; }
+
+/* ---- Active side highlight ---------------------------------------------- */
+.chessbharat-game .cb-pbar.is-active { border-color: var(--cb-saffron); box-shadow: inset 0 0 0 1px rgba(255,157,46,0.35); }
+.chessbharat-game .cb-clock.is-active { background: var(--cb-saffron); color: var(--cb-saffron-ink); border-color: var(--cb-saffron); }
+
+/* ---- Result overlay ----------------------------------------------------- */
+.chessbharat-game .cb-result {
+  position: relative;
+  width: min(420px, 100%);
+  background: var(--cb-surface);
+  border: 1px solid var(--cb-line-strong);
+  border-radius: var(--cb-radius-lg);
+  padding: var(--cb-space-6);
+  box-shadow: var(--cb-shadow-3);
+  text-align: center;
+  overflow: hidden;
+}
+.chessbharat-game .cb-result .cb-portrait { margin: 0 auto var(--cb-space-3); }
+.chessbharat-game .cb-result__ribbon { position: absolute; inset: 0 0 auto 0; height: 5px; }
+.chessbharat-game .cb-result__ribbon--win  { background: linear-gradient(90deg, var(--cb-green), var(--cb-saffron)); }
+.chessbharat-game .cb-result__ribbon--loss { background: var(--cb-danger); }
+.chessbharat-game .cb-result__ribbon--draw { background: var(--cb-ink-faint); }
+.chessbharat-game .cb-result__title { font-size: var(--cb-fs-2xl); font-weight: 600; }
+.chessbharat-game .cb-result__reason { color: var(--cb-ink-dim); font-size: var(--cb-fs-sm); margin-top: 4px; }
+.chessbharat-game .cb-result__stats { display: flex; justify-content: center; gap: var(--cb-space-6); margin: var(--cb-space-5) 0; }
+.chessbharat-game .cb-result__stats dt { font-size: var(--cb-fs-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--cb-ink-faint); }
+.chessbharat-game .cb-result__stats dd { font-size: var(--cb-fs-xl); font-weight: 700; }
+.chessbharat-game .cb-result__actions { display: flex; flex-direction: column; gap: var(--cb-space-2); }
 
 /* ---- Opponent header ---------------------------------------------------- */
 .chessbharat-game .cb-opp {
