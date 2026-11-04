@@ -3,6 +3,24 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.5.0] — Phase 5: Full experience (portraits, polish)
+
+### Added
+- **11 original opponent portraits** generated with one consistent art
+  direction (painterly, teal/saffron, chess-club), optimised to WebP
+  (~18 KB each, 232 KB total), lazy-loaded, with a neutral initials fallback.
+  Prompts and production notes in `assets/portraits/PORTRAIT-ASSETS.md`.
+- Portraits wired into the lobby cards, the in-game opponent header, and the
+  result screen.
+
+### Fixed
+- The top bar no longer overlaps the in-game opponent header when the board
+  view scrolls (top bar is now static rather than sticky).
+
+### Notes
+- Opponent selection, full gameplay, clocks, controls, results and PGN export
+  were completed in Phases 1–4; this phase adds the final artwork and polish.
+
 ## [0.4.0] — Phase 4: Opponents (personality move selection)
 
 ### Added

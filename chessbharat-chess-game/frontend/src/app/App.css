@@ -21,8 +21,7 @@
 .chessbharat-game .cb-skip:focus { top: 12px; }
 
 .chessbharat-game .cb-topbar {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: var(--cb-z-header);
   display: flex;
   align-items: center;
