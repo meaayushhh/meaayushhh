@@ -1,7 +1,7 @@
 {
   "name": "chessbharat-chess-game-frontend",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.7.1",
   "type": "module",
   "description": "Frontend source for the ChessBharat Chess Game WordPress plugin. Builds into ../assets/dist.",
   "license": "GPL-3.0-or-later",
@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:standalone": "vite build --config vite.standalone.config.ts && node scripts/build-standalone.mjs"
   },
   "dependencies": {
     "chess.js": "1.4.0",

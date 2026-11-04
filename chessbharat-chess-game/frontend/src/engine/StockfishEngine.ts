@@ -86,7 +86,14 @@ export class StockfishEngine {
       rejectOnError = reject;
     });
 
-    const worker = new Worker(this.url);
+    // A standalone (single-file) build can provide a pre-built blob worker URL
+    // with the engine + WASM inlined, so it runs without a server. Otherwise we
+    // load the worker from its own URL (the WordPress plugin path).
+    const injected =
+      typeof self !== 'undefined'
+        ? (self as unknown as { __CHESSBHARAT_ENGINE_WORKER_URL__?: string }).__CHESSBHARAT_ENGINE_WORKER_URL__
+        : undefined;
+    const worker = new Worker(injected || this.url);
     this.worker = worker;
     worker.onmessage = (e: MessageEvent) => {
       const line = typeof e.data === 'string' ? e.data : String(e.data?.data ?? '');

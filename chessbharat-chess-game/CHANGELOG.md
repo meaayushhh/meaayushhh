@@ -3,6 +3,17 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.7.1] — Standalone offline build
+
+### Added
+- A single-file **offline build** (`play-chessbharat.html`, ~3.2 MB): the whole
+  game, including the Stockfish engine (run from an inlined WASM blob worker),
+  all portraits and fonts, in one HTML file that plays from `file://` with no
+  server. Build with `npm run build:standalone`.
+- Backward-compatible hooks enabling it: optional inline `portraits` map in the
+  runtime config, and an optional pre-built engine worker URL. Neither changes
+  WordPress plugin behaviour.
+
 ## [0.7.0] — Identity, pacing & copy
 
 ### Changed

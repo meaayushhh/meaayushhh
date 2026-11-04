@@ -18,6 +18,8 @@ export interface ChessBharatConfig {
   showCoordinates: boolean;
   /** Plugin version, for cache-busting / display. */
   version: string;
+  /** Optional inline portrait data URIs, keyed by filename (standalone build). */
+  portraits?: Record<string, string>;
 }
 
 declare global {
@@ -33,7 +35,7 @@ const DEFAULTS: ChessBharatConfig = {
   restUrl: '',
   nonce: '',
   showCoordinates: true,
-  version: '0.7.0-dev',
+  version: '0.7.1-dev',
 };
 
 export function getConfig(): ChessBharatConfig {

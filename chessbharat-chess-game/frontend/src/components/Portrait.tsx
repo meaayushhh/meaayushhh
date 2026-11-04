@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Opponent } from '../opponents/types';
+import { getConfig } from '../app/config';
 
 /**
  * Opponent portrait.
@@ -28,7 +29,11 @@ export function Portrait({
     .join('')
     .toUpperCase();
 
-  const showImage = Boolean(imageBase) && !failed;
+  // A standalone build can inline portraits as data URIs via config.portraits,
+  // keyed by filename. Otherwise fall back to imageBase + filename (WordPress).
+  const inlineSrc = getConfig().portraits?.[opponent.portrait];
+  const src = inlineSrc ?? (imageBase ? `${imageBase}${opponent.portrait}` : '');
+  const showImage = Boolean(src) && !failed;
 
   return (
     <div
@@ -38,7 +43,7 @@ export function Portrait({
     >
       {showImage ? (
         <img
-          src={`${imageBase}${opponent.portrait}`}
+          src={src}
           alt={`${opponent.name}, opponent portrait`}
           loading="lazy"
           decoding="async"
