@@ -5,7 +5,7 @@ import { DIFFICULTY_META } from '../opponents/types';
  * The 11 ChessBharat opponents.
  *
  * Ratings are TARGET LABELS, to be calibrated through the Phase 4 test
- * harness and reported honestly — not guaranteed Elo. The `config` values are
+ * harness and reported honestly, not guaranteed Elo. The `config` values are
  * starting points for the personality layer and will be tuned during
  * calibration. Dialogue is contextual and must never reveal engine
  * evaluations or the best move.
@@ -48,7 +48,7 @@ export const OPPONENTS: Opponent[] = [
     rating: 400,
     ratingLabel: '~400',
     difficulty: 'beginner',
-    tagline: 'Knows the rules — mostly.',
+    tagline: 'Knows the rules, mostly.',
     signatureLine: 'I know the rules now. Mostly!',
     bio: 'Has the rules down and spots some free pieces, but still misses simple threats and leaves pieces loose under pressure.',
     learningObjective: 'Piece safety and king safety.',
@@ -106,7 +106,7 @@ export const OPPONENTS: Opponent[] = [
     rating: 900,
     ratingLabel: '~900',
     difficulty: 'intermediate',
-    tagline: 'Plays for fun — but loves to win.',
+    tagline: 'Plays for fun, but loves to win.',
     signatureLine: 'I play for fun. But I do like winning!',
     bio: 'Reaches for familiar openings, tries early queen raids and simple traps. Can find a basic combination, then drift in quiet positions.',
     learningObjective: 'Tactical awareness and opening principles.',
@@ -198,7 +198,7 @@ export const OPPONENTS: Opponent[] = [
     difficulty: 'advanced',
     tagline: 'Attack first, ask questions never.',
     signatureLine: "I'd rather lose attacking than win defending.",
-    bio: 'Lives for the initiative — open lines, piece activity and sacrifices. Inspired by aggressive chess philosophies, not any real player.',
+    bio: 'Lives for the initiative: open lines, piece activity and sacrifices. Inspired by aggressive chess philosophies, not any real player.',
     learningObjective: 'Defend accurately and punish overextension.',
     weakness: 'Overextends, sacrifices unsoundly and can stumble in endgames.',
     portrait: 'portrait-07-aggressor.webp',
@@ -280,7 +280,7 @@ export const OPPONENTS: Opponent[] = [
     },
     dialogue: {
       gameStart: ['Trade the pieces. Keep the problems.'],
-      enterEndgame: ['Finally — my part of the game.'],
+      enterEndgame: ['Finally, my part of the game.'],
       check: ['Even the checks are technique.'],
       victory: ['A matter of technique.'],
     },

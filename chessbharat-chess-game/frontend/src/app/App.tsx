@@ -28,7 +28,7 @@ export function App() {
           type="button"
           className="cb-topbar__brand"
           onClick={exitToLobby}
-          aria-label="ChessBharat — back to opponent selection"
+          aria-label="ChessBharat, back to opponent selection"
         >
           <Logo size={34} />
         </button>

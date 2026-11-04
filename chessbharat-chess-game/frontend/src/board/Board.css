@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Chessboard — square, responsive, never overflows its container.
+   Chessboard - square, responsive, never overflows its container.
    Sizing uses container-query units so pieces/coords scale with the board.
    A physical, slightly-3D presentation: a stone frame, a recessed playing
    well, soft grounded piece shadows and a restrained warm ambient glow.
@@ -28,7 +28,7 @@
   inset: -7%;
   z-index: -1;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 157, 46, 0.12), transparent 72%);
+  background: radial-gradient(closest-side, rgba(217, 131, 36, 0.11), transparent 72%);
   pointer-events: none;
 }
 
@@ -67,7 +67,7 @@
 }
 .chessbharat-game button.cb-sq { cursor: pointer; }
 .chessbharat-game button.cb-sq:focus-visible {
-  outline: 2px solid var(--cb-cyan);
+  outline: 2px solid var(--cb-focus);
   outline-offset: -3px;
   z-index: 3;
 }
@@ -119,7 +119,7 @@
   z-index: 2;
 }
 
-/* Last move — a warm wash on both origin and destination. */
+/* Last move - a warm wash on both origin and destination. */
 .chessbharat-game .cb-sq.is-last::after {
   content: "";
   position: absolute;
@@ -130,7 +130,7 @@
 }
 @keyframes cb-lastmove-in { from { opacity: 0; } to { opacity: 1; } }
 
-/* Selected square — unmistakable warm highlight. */
+/* Selected square - unmistakable warm highlight. */
 .chessbharat-game .cb-sq.is-selected.cb-sq--light { background-color: var(--cb-sq-light-sel); }
 .chessbharat-game .cb-sq.is-selected.cb-sq--dark  { background-color: var(--cb-sq-dark-sel); }
 .chessbharat-game .cb-sq.is-selected {
@@ -138,7 +138,7 @@
   z-index: 2;
 }
 
-/* King in check — clear red highlight (not colour alone: piece + radial), with
+/* King in check - clear red highlight (not colour alone: piece + radial), with
    a gentle realistic pulse. */
 .chessbharat-game .cb-sq.is-check::before {
   content: "";
@@ -150,7 +150,7 @@
 }
 @keyframes cb-check-pulse { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
 
-/* Piece glyphs — one cohesive solid set, coloured per side, with a soft
+/* Piece glyphs - one cohesive solid set, coloured per side, with a soft
    raised drop shadow for depth. */
 .chessbharat-game .cb-piece {
   position: relative;
@@ -197,7 +197,7 @@
   z-index: 1;
 }
 
-/* Coordinates — subtle, legible, in-corner. */
+/* Coordinates - subtle, legible, in-corner. */
 .chessbharat-game .cb-coord {
   position: absolute;
   font-family: var(--cb-ff-mono);

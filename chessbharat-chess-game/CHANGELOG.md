@@ -3,6 +3,29 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.7.0] — Identity, pacing & copy
+
+### Changed
+- **Typography:** the game now uses **League Spartan** (display) and **Barlow**
+  (text) only, bundled locally as woff2 (SIL OFL) with no font-CDN dependency.
+- **Colour system reworked** to a grounded tricolour identity: deep green is the
+  primary action colour, burnt saffron is a restrained accent, on a warm
+  charcoal base. Removed the gradient "mesh" background and all neon cyan/violet
+  accents for a less generic, non-AI look.
+- **Opponent pacing:** opponents now take a human-like amount of time to move,
+  driven by each one's thinking-time profile (beginners no longer reply
+  instantly; stronger opponents deliberate longer), capped by the clock in timed
+  games.
+- **Copy:** new narrative lobby introduction; an opponent's spoken line now
+  appears only **after the game starts**, not on the selection screen.
+- **Portraits:** regenerated the three beginner portraits so the full cast is
+  visually distinct (a child, a middle-aged woman, a young man, and the existing
+  varied set).
+
+### Removed
+- Em dashes removed from all in-game copy (and source), per house style; the
+  unlimited clock now shows an infinity symbol.
+
 ## [0.6.1] — Brand & board polish
 
 ### Changed

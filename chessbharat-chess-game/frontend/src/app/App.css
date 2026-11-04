@@ -1,5 +1,5 @@
 /* ==========================================================================
-   App shell — top bar + main region.
+   App shell - top bar + main region.
    ========================================================================== */
 
 .chessbharat-game .cb-app { position: relative; min-height: 420px; }
@@ -44,7 +44,7 @@
 
 /* ---- Brand lockup (logo + wordmark) ------------------------------------ */
 .chessbharat-game .cb-brand { display: inline-flex; align-items: center; gap: 10px; }
-.chessbharat-game .cb-mark { filter: drop-shadow(0 0 10px rgba(255, 157, 46, 0.35)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)); }
+.chessbharat-game .cb-mark { filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.55)); }
 .chessbharat-game .cb-wordmark {
   display: flex;
   flex-direction: column;

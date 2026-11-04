@@ -38,9 +38,12 @@ export function Lobby({
         <p className="cb-eyebrow">Play Chess Online</p>
         <h1 id="cb-lobby-title">Choose your opponent</h1>
         <p className="cb-lobby__intro">
-          Eleven original computer players, each with a distinct personality, opening
-          repertoire and playing style. Pick an opponent, set the clock, and play a
-          full game — from your first opening move to the final result.
+          Every player across this table learned the game a different way. One is
+          still working out how the knight jumps. Another has spent forty years
+          trading pieces down to the bare, perfect ending. Eleven of them are
+          waiting, each with a style, a temperament and a few favourite openings.
+          Sit down, set the clock, and find out which one plays like you, and
+          which one you can never quite read.
         </p>
       </header>
 
@@ -171,7 +174,6 @@ function SetupDialog({
               {DIFFICULTY_META[opponent.difficulty].label} · {opponent.ratingLabel}
             </span>
             <h2 id="cb-setup-title">{opponent.name}</h2>
-            <p className="cb-setup__sig">“{opponent.signatureLine}”</p>
           </div>
         </div>
 
@@ -193,7 +195,7 @@ function SetupDialog({
           <legend>Time control</legend>
           {classicalOnly && (
             <p className="cb-setup__note">
-              {opponent.name} plays classical time controls only — faster clocks are disabled.
+              {opponent.name} plays classical time controls only. Faster clocks are disabled.
             </p>
           )}
           <div className="cb-tc-grid">

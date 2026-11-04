@@ -8,7 +8,7 @@
 
 export type DifficultyGroup = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 
-/** Dialogue is contextual, triggered by game events — never random spam. */
+/** Dialogue is contextual, triggered by game events - never random spam. */
 export type DialogueTrigger =
   | 'gameStart'
   | 'ownMistake'
@@ -34,7 +34,7 @@ export interface OpeningRepertoire {
 
 /**
  * Beginner mistake model (used for the 200–900 opponents). Controlled,
- * plausible human errors — NOT random legal moves. Phase 4 implements the
+ * plausible human errors - NOT random legal moves. Phase 4 implements the
  * behaviour; these are the tunable parameters.
  */
 export interface MistakeModel {
@@ -69,7 +69,7 @@ export interface PersonalityConfig {
   openingRepertoire: OpeningRepertoire;
   mistakeModel: MistakeModel | null;
   moveSelectionPolicy: MoveSelectionPolicy;
-  /** 'instant' | 'quick' | 'measured' | 'deliberate' — paces the UI "thinking". */
+  /** 'instant' | 'quick' | 'measured' | 'deliberate' - paces the UI "thinking". */
   thinkingTimeProfile: 'instant' | 'quick' | 'measured' | 'deliberate';
 }
 
@@ -77,7 +77,7 @@ export interface Opponent {
   id: string;
   index: number;              // 1..11, display order
   name: string;
-  /** Target rating LABEL — calibrated and reported honestly, not guaranteed. */
+  /** Target rating LABEL - calibrated and reported honestly, not guaranteed. */
   rating: number;
   ratingLabel: string;        // e.g. "~200", "2300+"
   difficulty: DifficultyGroup;

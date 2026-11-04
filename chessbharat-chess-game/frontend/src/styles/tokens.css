@@ -1,75 +1,71 @@
 /* ==========================================================================
-   ChessBharat Chess Game — Design Tokens
-   --------------------------------------------------------------------------
-   Derived from the canonical ChessBharat brand reference in the workspace
-   (the "Evolution of Chess" landing page, index.html): a dark, cinematic
-   identity with a saffron thread and a tricolour (saffron / white / green)
-   knight mark.
+   ChessBharat Chess Game, design tokens.
 
-   EVERYTHING is scoped under .chessbharat-game so the plugin never touches
-   the host theme's :root, body, button, h1 or img styles. To re-skin the
-   game for the live site, change only the values in this file.
+   A grounded, editorial chess-club identity drawn from the Indian tricolour:
+   deep green as the primary action colour, a burnt-saffron accent, warm ivory
+   and charcoal. No neon, no gradient "mesh" backgrounds. Everything is scoped
+   under .chessbharat-game so the host theme is never touched; re-skin the game
+   by changing only the values here.
    ========================================================================== */
 
 .chessbharat-game {
-  /* ---- Brand surfaces & ink ------------------------------------------- */
-  --cb-bg:            #04050a;   /* deep night — page base                 */
-  --cb-surface:       #0b0f1a;   /* raised panels / cards                  */
-  --cb-surface-2:     #121725;   /* nested panels, inputs                  */
-  --cb-surface-3:     #1a2133;   /* hover / selected surface               */
-  --cb-ink:           #eaf0fa;   /* primary text                          */
-  --cb-ink-dim:       #9aa4b8;   /* secondary text                        */
-  --cb-ink-faint:     #5d667a;   /* tertiary / captions                   */
+  /* ---- Surfaces and ink ---------------------------------------------- */
+  --cb-bg:            #0a0e0c;   /* deep charcoal with a faint green cast   */
+  --cb-surface:       #111613;   /* raised panels / cards                   */
+  --cb-surface-2:     #19201b;   /* nested panels, inputs                   */
+  --cb-surface-3:     #232c26;   /* hover / selected surface                */
+  --cb-ink:           #eef1ea;   /* primary text                           */
+  --cb-ink-dim:       #a6afa6;   /* secondary text                         */
+  --cb-ink-faint:     #69726b;   /* tertiary / captions                    */
 
-  /* ---- Brand accents (from the landing page) -------------------------- */
-  --cb-saffron:       #ff9d2e;   /* signature accent                      */
-  --cb-saffron-soft:  #ffd08a;
-  --cb-saffron-ink:   #1a0e00;   /* text on saffron fills                 */
-  --cb-cyan:          #4de8ff;   /* interactive / focus glow              */
-  --cb-violet:        #8d7bff;
-  --cb-green:         #2fa34a;   /* tricolour green; also "positive"      */
-  --cb-white-flag:    #f3f5f8;   /* tricolour white                       */
+  /* ---- Tricolour accents --------------------------------------------- */
+  --cb-green:         #2e7d52;   /* PRIMARY action (tricolour green)       */
+  --cb-green-deep:    #1e5538;
+  --cb-green-soft:    #6fae86;
+  --cb-green-ink:     #06120c;   /* text on green fills                    */
+  --cb-saffron:       #d98324;   /* accent / highlight (burnt saffron)     */
+  --cb-saffron-soft:  #e7b068;
+  --cb-saffron-ink:   #1a0e00;   /* text on saffron fills                  */
+  --cb-white-flag:    #f3f5f8;   /* tricolour white (logo mane)            */
 
-  /* ---- Semantic status ------------------------------------------------ */
-  --cb-positive:      #4fc57a;
-  --cb-warning:       #ffc24b;
-  --cb-danger:        #ff6a5c;
-  --cb-danger-soft:   #d96b5f;
+  /* ---- Status -------------------------------------------------------- */
+  --cb-positive:      #4caf6e;
+  --cb-warning:       #d9a441;
+  --cb-danger:        #cf5b4e;
+  --cb-danger-soft:   #c2614f;
 
-  /* ---- Lines, glass, overlays ----------------------------------------- */
-  --cb-line:          rgba(255, 255, 255, 0.10);
-  --cb-line-strong:   rgba(255, 255, 255, 0.18);
-  --cb-glass:         rgba(8, 12, 22, 0.62);
-  --cb-scrim:         rgba(2, 3, 6, 0.72);
+  /* ---- Lines, glass, overlays, focus --------------------------------- */
+  --cb-line:          rgba(255, 255, 255, 0.09);
+  --cb-line-strong:   rgba(255, 255, 255, 0.16);
+  --cb-glass:         rgba(12, 16, 13, 0.66);
+  --cb-scrim:         rgba(5, 7, 6, 0.74);
+  --cb-focus:         #f0c98a;   /* warm, high-contrast keyboard focus ring */
 
-  /* ---- Chessboard palette (tuned for the dark brand) ------------------ */
-  --cb-sq-light:      #e7dcc4;   /* warm ivory light square               */
-  --cb-sq-dark:       #4e6f60;   /* muted deep-green dark square           */
-  --cb-sq-light-sel:  #f2d98f;   /* selected (saffron-warm) on light       */
-  --cb-sq-dark-sel:   #8a8446;
-  --cb-last-move:     rgba(255, 157, 46, 0.30);  /* saffron wash          */
-  --cb-legal:         rgba(20, 30, 24, 0.34);    /* quiet move dot        */
-  --cb-legal-capture: rgba(255, 106, 92, 0.55);  /* capture ring          */
-  --cb-check:         #d96b5f;   /* king-in-check square                  */
-  --cb-coord:         rgba(26, 33, 24, 0.55);    /* coordinate labels     */
-  --cb-piece-light:   #f7f4ee;   /* white pieces                          */
-  --cb-piece-light-edge: #c7c2b6;
-  --cb-piece-dark:    #26303a;   /* black pieces                          */
-  --cb-piece-dark-edge: #0d141b;
+  /* ---- Chessboard palette (a real wood-and-felt board) --------------- */
+  --cb-sq-light:      #ead9be;   /* warm ivory light square                */
+  --cb-sq-dark:       #45695a;   /* deep green dark square                  */
+  --cb-sq-light-sel:  #e9c789;   /* selected (warm) on light               */
+  --cb-sq-dark-sel:   #6f7d42;
+  --cb-last-move:     rgba(217, 131, 36, 0.30);   /* saffron wash          */
+  --cb-legal:         rgba(20, 28, 22, 0.34);     /* quiet move dot        */
+  --cb-legal-capture: rgba(207, 91, 78, 0.52);    /* capture ring          */
+  --cb-check:         #cf5b4e;   /* king in check                         */
+  --cb-coord:         rgba(26, 33, 24, 0.55);     /* coordinate labels     */
+  --cb-piece-light:   #f6f3ec;   /* white pieces                          */
+  --cb-piece-light-edge: #c5c0b4;
+  --cb-piece-dark:    #27312b;   /* black pieces                          */
+  --cb-piece-dark-edge: #0c1410;
 
-  /* ---- Difficulty group hues (used sparingly, never colour-only) ------ */
-  --cb-diff-beginner:     #5bc0eb;
-  --cb-diff-intermediate: #9bc53d;
-  --cb-diff-advanced:     #ff9d2e;
-  --cb-diff-expert:       #c85cff;
+  /* ---- Difficulty hues (muted, used sparingly, never colour-only) ---- */
+  --cb-diff-beginner:     #6aa0c2;
+  --cb-diff-intermediate: #7aa64f;
+  --cb-diff-advanced:     #d98324;
+  --cb-diff-expert:       #9a6cb8;
 
-  /* ---- Typography ----------------------------------------------------- */
-  --cb-ff-display: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype",
-                   Palatino, Georgia, serif;
-  --cb-ff-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-              Arial, sans-serif;
-  --cb-ff-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
-                monospace;
+  /* ---- Typography (League Spartan display, Barlow text) -------------- */
+  --cb-ff-display: "League Spartan", "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --cb-ff-ui: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --cb-ff-mono: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --cb-fs-xs:   0.75rem;    /* 12 */
   --cb-fs-sm:   0.8125rem;  /* 13 */
@@ -81,10 +77,10 @@
   --cb-fs-3xl:  clamp(2.25rem, 1.4rem + 3.6vw, 3.75rem);
 
   --cb-lh-tight: 1.05;
-  --cb-lh-snug:  1.25;
+  --cb-lh-snug:  1.22;
   --cb-lh-base:  1.55;
 
-  /* ---- Spacing scale (4px base) --------------------------------------- */
+  /* ---- Spacing scale (4px base) -------------------------------------- */
   --cb-space-1: 0.25rem;
   --cb-space-2: 0.5rem;
   --cb-space-3: 0.75rem;
@@ -94,26 +90,26 @@
   --cb-space-7: 3rem;
   --cb-space-8: 4rem;
 
-  /* ---- Radii ---------------------------------------------------------- */
+  /* ---- Radii --------------------------------------------------------- */
   --cb-radius-sm: 8px;
   --cb-radius:    14px;
   --cb-radius-lg: 20px;
   --cb-radius-pill: 999px;
 
-  /* ---- Elevation / shadows (restrained) ------------------------------- */
+  /* ---- Elevation (restrained, no neon glow) -------------------------- */
   --cb-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
   --cb-shadow-2: 0 6px 20px rgba(0, 0, 0, 0.45);
   --cb-shadow-3: 0 18px 48px rgba(0, 0, 0, 0.55);
-  --cb-glow-cyan:    0 0 0 1px rgba(77, 232, 255, 0.35), 0 0 24px rgba(77, 232, 255, 0.22);
-  --cb-glow-saffron: 0 0 0 1px rgba(255, 157, 46, 0.45), 0 0 26px rgba(255, 157, 46, 0.30);
+  --cb-ring-green:   0 0 0 1px rgba(46, 125, 82, 0.55);
+  --cb-ring-saffron: 0 0 0 1px rgba(217, 131, 36, 0.5);
 
-  /* ---- Motion --------------------------------------------------------- */
+  /* ---- Motion -------------------------------------------------------- */
   --cb-dur-fast: 120ms;
   --cb-dur:      200ms;
   --cb-dur-slow: 360ms;
   --cb-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  /* ---- Layout --------------------------------------------------------- */
+  /* ---- Layout -------------------------------------------------------- */
   --cb-gutter: clamp(14px, 3.5vw, 36px);
   --cb-maxw: 1240px;
   --cb-z-modal: 60;

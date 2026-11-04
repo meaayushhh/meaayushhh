@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { formatClock } from './useClock';
 
 describe('formatClock', () => {
-  it('renders an em-dash clock for unlimited (null)', () => {
-    expect(formatClock(null)).toBe('—:—');
+  it('renders an infinity symbol for unlimited (null)', () => {
+    expect(formatClock(null)).toBe('∞');
   });
   it('formats seconds with a leading zero', () => {
     expect(formatClock(5000)).toBe('0:05');

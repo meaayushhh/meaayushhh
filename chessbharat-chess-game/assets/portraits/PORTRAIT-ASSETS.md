@@ -20,9 +20,9 @@ used. The cast is intentionally varied in age and gender.
 
 | # | File | Character prompt (appended to the shared art direction) |
 |---|---|---|
-| 1 | `portrait-01-absolute-beginner.webp` | young absolute-beginner, curious and slightly confused, approachable |
-| 2 | `portrait-02-beginner.webp` | earnest young beginner, quietly optimistic, just learned the rules |
-| 3 | `portrait-03-rookie.webp` | enthusiastic improver, alert and bright-eyed, starting to see patterns |
+| 1 | `portrait-01-absolute-beginner.webp` | cheerful young girl (~10), brand new to chess, curious and a little puzzled |
+| 2 | `portrait-02-beginner.webp` | warm middle-aged woman, earnest and quietly optimistic, just learned the rules |
+| 3 | `portrait-03-rookie.webp` | enthusiastic young man, alert and bright-eyed, starting to see the patterns |
 | 4 | `portrait-04-casual-player.webp` | relaxed confident woman, plays for fun, playful competitive smile |
 | 5 | `portrait-05-club-player.webp` | focused serious amateur, man in his forties with glasses, methodical |
 | 6 | `portrait-06-trickster.webp` | mischievous clever woman, sly knowing smirk, sets traps and gambits |

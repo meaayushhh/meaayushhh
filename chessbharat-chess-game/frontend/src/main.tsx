@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 
 // Global design system first, then component styles are imported by components.
+import './styles/fonts.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/ui.css';

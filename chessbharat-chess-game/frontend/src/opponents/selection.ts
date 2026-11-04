@@ -8,7 +8,7 @@ import type { PersonalityConfig } from './types';
  * Stockfish (MultiPV) proposes ranked candidate moves with evaluations; this
  * module chooses among them according to an opponent's personality, while
  * keeping a strong preference for legal, reasonable moves. For the 200–900
- * opponents a controlled mistake model deliberately — but plausibly — picks a
+ * opponents a controlled mistake model deliberately - but plausibly - picks a
  * weaker candidate, instead of playing random moves.
  */
 
@@ -55,7 +55,7 @@ export function enrichCandidates(fen: string, candidates: Candidate[]): Enriched
     try {
       verbose = chess.move({ from: c.move.from, to: c.move.to, promotion: c.move.promotion });
     } catch {
-      continue; // illegal in this position (stale) — skip
+      continue; // illegal in this position (stale) - skip
     }
     const givesCheck = chess.isCheck();
     out.push({

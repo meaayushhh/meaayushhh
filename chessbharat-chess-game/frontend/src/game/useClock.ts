@@ -12,7 +12,7 @@ export interface ClockState {
  * Elapsed time is measured from wall-clock timestamps (not by counting ticks),
  * so throttled background tabs don't distort the running side's remaining time
  * while the tab is focused. Browser background-tab/device-sleep behaviour still
- * limits perfect accuracy for casual play — this is documented for players and
+ * limits perfect accuracy for casual play - this is documented for players and
  * hardened further in Phase 5.
  */
 export function useClock(opts: {
@@ -87,7 +87,7 @@ export function useClock(opts: {
 }
 
 export function formatClock(ms: number | null): string {
-  if (ms == null) return '—:—';
+  if (ms == null) return '∞'; // infinity, for unlimited time
   const total = Math.max(0, Math.ceil(ms / 1000));
   const m = Math.floor(total / 60);
   const s = total % 60;

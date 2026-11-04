@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Shared UI primitives — buttons, chips, badges, portraits, modal.
+   Shared UI primitives - buttons, chips, badges, portraits, modal.
    All scoped under .chessbharat-game.
    ========================================================================== */
 
@@ -33,30 +33,34 @@
     background-color var(--cb-dur) var(--cb-ease),
     border-color var(--cb-dur) var(--cb-ease);
 }
-.chessbharat-game .cb-btn:hover { border-color: var(--cb-cyan); box-shadow: var(--cb-glow-cyan); }
+.chessbharat-game .cb-btn:hover { border-color: var(--cb-line-strong); background: var(--cb-surface-3); }
 .chessbharat-game .cb-btn:active { transform: translateY(1px); }
 .chessbharat-game .cb-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 
 .chessbharat-game .cb-btn--primary {
-  background: var(--cb-saffron);
-  border-color: var(--cb-saffron);
-  color: var(--cb-saffron-ink);
+  background: var(--cb-green);
+  border-color: var(--cb-green);
+  color: var(--cb-green-ink);
 }
-.chessbharat-game .cb-btn--primary:hover { box-shadow: var(--cb-glow-saffron); border-color: var(--cb-saffron); }
+.chessbharat-game .cb-btn--primary:hover {
+  background: var(--cb-green-deep);
+  border-color: var(--cb-green);
+  box-shadow: var(--cb-ring-green);
+}
 
 .chessbharat-game .cb-btn--ghost {
   background: transparent;
   border-color: var(--cb-line-strong);
 }
+.chessbharat-game .cb-btn--ghost:hover { background: var(--cb-surface-2); }
 .chessbharat-game .cb-btn--danger {
   background: transparent;
-  border-color: rgba(255, 106, 92, 0.6);
+  border-color: rgba(207, 91, 78, 0.55);
   color: var(--cb-danger);
 }
 .chessbharat-game .cb-btn--danger:hover {
-  background: rgba(255, 106, 92, 0.12);
+  background: rgba(207, 91, 78, 0.12);
   border-color: var(--cb-danger);
-  box-shadow: 0 0 22px rgba(255, 106, 92, 0.22);
 }
 .chessbharat-game .cb-btn--sm { min-height: 36px; padding: 0 var(--cb-space-3); font-size: var(--cb-fs-sm); }
 

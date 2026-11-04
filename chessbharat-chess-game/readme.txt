@@ -4,7 +4,7 @@ Tags: chess, game, stockfish, board game, play chess
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 0.6.1
+Stable tag: 0.7.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,6 +46,13 @@ which is licensed under the GNU General Public License v3.0. See
 THIRD-PARTY-LICENSES.md for full notices and source information.
 
 == Changelog ==
+
+= 0.7.0 =
+* Identity and feel: League Spartan + Barlow typography (bundled, no CDN); a
+  grounded tricolour palette (deep green primary, saffron accent) with the neon
+  accents and gradient background removed; human-like opponent move pacing;
+  a narrative intro; opponent lines now appear only after the game starts;
+  distinct portraits for the beginner opponents; em dashes removed from copy.
 
 = 0.6.1 =
 * Brand & board polish: ChessBharat horse-head logo in the header; physical,

@@ -33,7 +33,7 @@ const DEFAULTS: ChessBharatConfig = {
   restUrl: '',
   nonce: '',
   showCoordinates: true,
-  version: '0.6.1-dev',
+  version: '0.7.0-dev',
 };
 
 export function getConfig(): ChessBharatConfig {

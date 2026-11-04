@@ -5,7 +5,7 @@ import type { Opponent } from '../opponents/types';
  * Opponent portrait.
  *
  * Final artwork (11 original character portraits) is produced in Phase 5. Until
- * then this renders a CLEARLY-LABELLED placeholder — never passed off as final
+ * then this renders a CLEARLY-LABELLED placeholder - never passed off as final
  * art. When a real image exists at assets/portraits/<file>, it is used and the
  * placeholder becomes the graceful fallback if the image fails to load.
  */
@@ -39,7 +39,7 @@ export function Portrait({
       {showImage ? (
         <img
           src={`${imageBase}${opponent.portrait}`}
-          alt={`${opponent.name} — opponent portrait`}
+          alt={`${opponent.name}, opponent portrait`}
           loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}

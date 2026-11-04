@@ -1,6 +1,6 @@
 /**
  * Minimal FEN helpers for rendering. Full rules/validation come from chess.js
- * in Phase 2 — this is only for turning a placement string into squares to draw.
+ * in Phase 2 - this is only for turning a placement string into squares to draw.
  */
 
 export type PieceColor = 'w' | 'b';

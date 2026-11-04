@@ -1,5 +1,5 @@
 /**
- * Tiny synthesized sound effects via the Web Audio API — no asset files, no
+ * Tiny synthesized sound effects via the Web Audio API - no asset files, no
  * network. Used for move / capture / check / game-end cues. All calls are
  * no-ops when sound is disabled or the browser blocks audio.
  */

@@ -1,7 +1,7 @@
 import type { Square } from '../utils/fen';
 
 /**
- * TEMPORARY opponent for Phase 2 — plays a uniformly random legal move.
+ * TEMPORARY opponent for Phase 2 - plays a uniformly random legal move.
  *
  * This exists ONLY so a complete game can be played end-to-end to verify the
  * rules (checkmate, stalemate, castling, en passant, promotion, draws). It is

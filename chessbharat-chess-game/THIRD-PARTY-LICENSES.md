@@ -24,6 +24,17 @@ MIT and BSD-2-Clause are permissive licenses; their notices are retained in the
 project's `frontend/node_modules` during development and will be reproduced in
 full in this file's appendix as each becomes part of the shipped bundle.
 
+## 1b. Bundled fonts (shipped as woff2 in the compiled bundle)
+
+| Font | Weights | License |
+|---|---|---|
+| League Spartan | 600, 700 | SIL Open Font License 1.1 |
+| Barlow | 400, 500, 600, 700 | SIL Open Font License 1.1 |
+
+Both are open-source fonts bundled locally (no runtime font-CDN dependency).
+The SIL OFL permits bundling and redistribution; font files retain their
+original license.
+
 ## 2. Build-time only (NOT shipped to production)
 
 Vite, TypeScript, `@vitejs/plugin-react`, Vitest and type packages are used to

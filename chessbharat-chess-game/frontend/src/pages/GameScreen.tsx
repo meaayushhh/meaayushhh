@@ -20,6 +20,26 @@ import './GameScreen.css';
 
 const CAP_GLYPH: Record<string, string> = { p: '♟', n: '♞', b: '♝', r: '♜', q: '♛' };
 
+/**
+ * How long the opponent appears to "think" before its move lands, so it feels
+ * like a person at the board rather than an instant reply. The window is driven
+ * by the opponent's thinkingTimeProfile; openings come a touch quicker, and
+ * every so often the opponent stops to calculate for noticeably longer.
+ */
+const THINK_WINDOW: Record<string, [number, number]> = {
+  instant: [650, 1900],
+  quick: [850, 2500],
+  measured: [1150, 3300],
+  deliberate: [1700, 4600],
+};
+function humanThinkMs(profile: string, ply: number): number {
+  const [lo, hi] = THINK_WINDOW[profile] ?? THINK_WINDOW.measured;
+  const openingEase = ply < 8 ? 0.82 : 1;
+  let t = (lo + Math.random() * (hi - lo)) * openingEase;
+  if (Math.random() < 0.12) t += 900 + Math.random() * 1700; // occasional deep think
+  return Math.round(Math.max(600, t));
+}
+
 export function GameScreen({
   setup,
   portraitsBase,
@@ -106,10 +126,21 @@ export function GameScreen({
     let cancelled = false;
     setThinking(true);
     const fen = game.fen;
-    const movetimeMs = Math.max(200, Math.min(opponent.config.searchTimeMs, 3000));
+    const movetimeMs = Math.max(150, Math.min(opponent.config.searchTimeMs, 3000));
+
+    // Target a human-like total think time, capped by remaining clock when timed.
+    let thinkTarget = humanThinkMs(opponent.config.thinkingTimeProfile, game.plyCount);
+    if (baseMs != null) {
+      const oppMs = oppColor === 'w' ? clock.whiteMs : clock.blackMs;
+      thinkTarget = Math.min(thinkTarget, Math.max(300, oppMs * 0.08));
+    }
+    const startedAt = Date.now();
 
     (async () => {
       const parsed = await engine.requestPersonalityMove({ fen, config: opponent.config, movetimeMs });
+      // Hold the move until the opponent has "thought" for its target time.
+      const remaining = thinkTarget - (Date.now() - startedAt);
+      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
       if (cancelled) return;
       // Validate the engine move against the current position; fall back if needed.
       let applied = parsed ? game.applyMove(parsed) : null;
@@ -249,7 +280,7 @@ export function GameScreen({
         <div className="cb-movehist">
           <h3 className="cb-panel__title">Moves</h3>
           {game.movePairs.length === 0 ? (
-            <p className="cb-prototype-note">No moves yet — you play {playerColor === 'w' ? 'White' : 'Black'}.</p>
+            <p className="cb-prototype-note">No moves yet. You play {playerColor === 'w' ? 'White' : 'Black'}.</p>
           ) : (
             <ol className="cb-moves cb-tnum" aria-label="Move history" ref={movesEndRef}>
               {game.movePairs.map((p) => {

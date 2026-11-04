@@ -38,7 +38,7 @@
 }
 
 /* ---- Thinking label ----------------------------------------------------- */
-.chessbharat-game .cb-think__label { color: var(--cb-cyan); font-size: var(--cb-fs-sm); margin-left: 8px; vertical-align: middle; }
+.chessbharat-game .cb-think__label { color: var(--cb-saffron); font-size: var(--cb-fs-sm); margin-left: 8px; vertical-align: middle; }
 
 /* ---- Promotion panel ---------------------------------------------------- */
 .chessbharat-game .cb-promo {
@@ -116,12 +116,12 @@
 .chessbharat-game .cb-opp__meta { flex: 1; min-width: 0; }
 .chessbharat-game .cb-opp__row { display: flex; align-items: center; gap: var(--cb-space-3); flex-wrap: wrap; }
 .chessbharat-game .cb-opp__name { font-size: var(--cb-fs-md); font-weight: 600; }
-.chessbharat-game .cb-opp__say { color: var(--cb-saffron-soft); font-family: var(--cb-ff-display); font-style: italic; font-size: var(--cb-fs-base); margin-top: 2px; }
+.chessbharat-game .cb-opp__say { color: var(--cb-saffron-soft); font-family: var(--cb-ff-ui); font-style: italic; font-size: var(--cb-fs-md); margin-top: 2px; }
 
-/* Thinking indicator (shown while the engine searches — Phase 3). */
+/* Thinking indicator (shown while the engine searches - Phase 3). */
 .chessbharat-game .cb-think { display: inline-flex; gap: 4px; align-items: center; }
 .chessbharat-game .cb-think[hidden] { display: none; }
-.chessbharat-game .cb-think i { width: 7px; height: 7px; border-radius: 50%; background: var(--cb-cyan); opacity: 0.5; animation: cb-think 1s var(--cb-ease) infinite; }
+.chessbharat-game .cb-think i { width: 7px; height: 7px; border-radius: 50%; background: var(--cb-saffron); opacity: 0.5; animation: cb-think 1s var(--cb-ease) infinite; }
 .chessbharat-game .cb-think i:nth-child(2) { animation-delay: 0.15s; }
 .chessbharat-game .cb-think i:nth-child(3) { animation-delay: 0.3s; }
 @keyframes cb-think { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }

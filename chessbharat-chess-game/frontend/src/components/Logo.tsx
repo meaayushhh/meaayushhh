@@ -1,7 +1,7 @@
 import logoUrl from '../assets/chessbharat-logo.webp';
 
 /**
- * ChessBharat brand mark — the tricolour horse-head logo. Bundled via Vite so
+ * ChessBharat brand mark - the tricolour horse-head logo. Bundled via Vite so
  * it resolves in both development and the production WordPress build without
  * depending on a configured asset path.
  */
