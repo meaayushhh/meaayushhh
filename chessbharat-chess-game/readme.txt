@@ -4,7 +4,7 @@ Tags: chess, game, stockfish, board game, play chess
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 0.6.0
+Stable tag: 0.6.1
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,6 +46,12 @@ which is licensed under the GNU General Public License v3.0. See
 THIRD-PARTY-LICENSES.md for full notices and source information.
 
 == Changelog ==
+
+= 0.6.1 =
+* Brand & board polish: ChessBharat horse-head logo in the header; physical,
+  slightly-3D board with a stone frame, grounded piece shadows and a restrained
+  warm glow; realistic move-slide and state animations (reduced-motion aware).
+  Fixed bundled asset paths for subdirectory plugin installs.
 
 = 0.6.0 =
 * Phase 6: QA and packaging. Installable plugin ZIP (no server build step),

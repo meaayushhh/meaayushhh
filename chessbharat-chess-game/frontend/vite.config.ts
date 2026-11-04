@@ -13,6 +13,10 @@ const root = import.meta.dirname;
  */
 export default defineConfig({
   plugins: [react()],
+  // Relative base so bundled asset URLs resolve against the script's own
+  // location (via import.meta.url) — correct when the plugin is served from
+  // /wp-content/plugins/.../assets/dist/ rather than the site root.
+  base: './',
   build: {
     outDir: resolve(root, '../assets/dist'),
     emptyOutDir: true,

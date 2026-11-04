@@ -3,6 +3,24 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.6.1] — Brand & board polish
+
+### Changed
+- **Brand logo:** the header now uses the ChessBharat tricolour horse-head logo
+  (bundled via Vite; resolves correctly under the plugin path).
+- **Board presentation:** physical, slightly-3D look — a beveled stone frame, a
+  recessed playing well, subtle per-square shading, grounded contact shadows
+  under pieces, and a restrained warm ambient glow (brand palette, not neon).
+- **Realistic animations:** pieces slide from origin to destination on each move
+  (Web Animations, natural easing); subtle hover-lift on draggable pieces,
+  last-move fade-in, legal-move dot pop, and a gentle king-in-check pulse. All
+  respect `prefers-reduced-motion`.
+
+### Fixed
+- Bundled asset URLs now use relative resolution (`base: './'`) so images load
+  correctly when the plugin is served from `/wp-content/plugins/...` rather than
+  the site root.
+
 ## [0.6.0] — Phase 6: QA & packaging
 
 ### Added

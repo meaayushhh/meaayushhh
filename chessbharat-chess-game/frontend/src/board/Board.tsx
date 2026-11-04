@@ -1,4 +1,4 @@
-import { useMemo, useState, type DragEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
 import {
   parseFenPlacement,
   squaresInOrder,
@@ -59,6 +59,36 @@ export function Board({
   const edgeFiles = orientation === 'w' ? FILES : [...FILES].reverse();
   const edgeRanks = orientation === 'w' ? RANKS : [...RANKS].reverse();
 
+  // Realistic move slide: when a new move lands, animate the piece now on the
+  // destination square sliding from its origin square (FLIP via Web Animations).
+  const boardRef = useRef<HTMLDivElement>(null);
+  const prevMoveRef = useRef<string | null>(null);
+  useEffect(() => {
+    const key = lastMove ? `${lastMove.from}${lastMove.to}` : null;
+    const changed = key !== null && key !== prevMoveRef.current;
+    prevMoveRef.current = key;
+    if (!changed || !lastMove || !boardRef.current) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    const fromIdx = order.indexOf(lastMove.from);
+    const toIdx = order.indexOf(lastMove.to);
+    if (fromIdx < 0 || toIdx < 0) return;
+    const dCol = (fromIdx % 8) - (toIdx % 8);
+    const dRow = Math.floor(fromIdx / 8) - Math.floor(toIdx / 8);
+    if (dCol === 0 && dRow === 0) return;
+
+    const el = boardRef.current.querySelector<HTMLElement>(
+      `.cb-sq[data-square="${lastMove.to}"] .cb-piece-drag`,
+    );
+    el?.animate?.(
+      [
+        { transform: `translate(${dCol * 100}%, ${dRow * 100}%)`, offset: 0 },
+        { transform: 'translate(0, 0)', offset: 1 },
+      ],
+      { duration: 240, easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)', fill: 'none' },
+    );
+  }, [lastMove, order, fen]);
+
   function canDrag(sq: Square): boolean {
     if (!interactive || !onDrop) return false;
     const p = pieces.get(sq);
@@ -68,7 +98,7 @@ export function Board({
 
   return (
     <div className="cb-board-wrap">
-      <div className="cb-board" role="grid" aria-label="Chessboard" data-orientation={orientation}>
+      <div className="cb-board" ref={boardRef} role="grid" aria-label="Chessboard" data-orientation={orientation}>
         {order.map((square) => {
           const piece = pieces.get(square);
           const light = isLightSquare(square);
