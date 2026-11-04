@@ -11,3 +11,4 @@ Thumbs.db
 
 # The compiled bundle in assets/dist IS committed (prod needs no build step),
 # so it is intentionally NOT ignored.
+frontend/public/

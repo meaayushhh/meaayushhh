@@ -47,6 +47,21 @@ export function parseBestMove(token: string): ParsedMove | null {
   return move;
 }
 
+/** A ranked engine candidate from a MultiPV search. */
+export interface Candidate {
+  /** First move of the principal variation. */
+  move: ParsedMove;
+  uci: string;
+  /** Centipawn score from the side-to-move's perspective (mate folded in). */
+  scoreCp: number;
+  /** Mate-in-N (signed) if this line forces mate, else null. */
+  mate: number | null;
+  /** 1 = engine's best line. */
+  rank: number;
+}
+
+const MATE_CP = 100000;
+
 type LineSub = (line: string) => void;
 
 export class StockfishEngine {
@@ -152,6 +167,65 @@ export class StockfishEngine {
     if (seq !== this.searchSeq) throw new Error('engine: search superseded');
     const m = line.match(/^bestmove\s+(\S+)/);
     return m ? m[1] : '(none)';
+  }
+
+  /**
+   * MultiPV search: returns up to `multipv` ranked candidate moves with scores,
+   * so a personality layer can choose among reasonable options. A later search
+   * supersedes this one (stale result rejects).
+   */
+  async searchMultiPV(req: {
+    fen: string;
+    movetimeMs?: number;
+    depth?: number;
+    multipv: number;
+  }): Promise<Candidate[]> {
+    if (!this.worker || this.dead) throw new Error('engine: not available');
+    const seq = ++this.searchSeq;
+    const lines = new Map<number, { depth: number; scoreCp: number; mate: number | null; uci: string }>();
+
+    const collector: LineSub = (line) => {
+      if (!line.startsWith('info') || !line.includes(' multipv ')) return;
+      const mpv = /\bmultipv (\d+)/.exec(line);
+      const depth = /\bdepth (\d+)/.exec(line);
+      const pv = /\bpv (\S+)/.exec(line);
+      const cp = /\bscore cp (-?\d+)/.exec(line);
+      const mate = /\bscore mate (-?\d+)/.exec(line);
+      if (!mpv || !pv) return;
+      const idx = Number(mpv[1]);
+      const d = depth ? Number(depth[1]) : 0;
+      const prev = lines.get(idx);
+      if (prev && prev.depth > d) return; // keep the deepest info per line
+      let scoreCp = 0;
+      let mateN: number | null = null;
+      if (mate) {
+        mateN = Number(mate[1]);
+        scoreCp = (mateN > 0 ? 1 : -1) * (MATE_CP - Math.abs(mateN));
+      } else if (cp) {
+        scoreCp = Number(cp[1]);
+      }
+      lines.set(idx, { depth: d, scoreCp, mate: mateN, uci: pv[1] });
+    };
+
+    this.subs.add(collector);
+    try {
+      this.post('stop');
+      this.setOption('MultiPV', Math.max(1, req.multipv));
+      this.post(`position fen ${req.fen}`);
+      this.post(req.depth != null ? `go depth ${req.depth}` : `go movetime ${req.movetimeMs ?? 1000}`);
+      const budget = (req.movetimeMs ?? 3000) + 20000;
+      await this.once((l) => l.startsWith('bestmove'), budget);
+    } finally {
+      this.subs.delete(collector);
+    }
+    if (seq !== this.searchSeq) throw new Error('engine: search superseded');
+
+    const out: Candidate[] = [];
+    for (const [rank, info] of [...lines.entries()].sort((a, b) => a[0] - b[0])) {
+      const move = parseBestMove(info.uci);
+      if (move) out.push({ move, uci: info.uci, scoreCp: info.scoreCp, mate: info.mate, rank });
+    }
+    return out;
   }
 
   terminate(): void {

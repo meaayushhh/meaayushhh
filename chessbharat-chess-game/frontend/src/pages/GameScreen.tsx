@@ -8,6 +8,7 @@ import { DIFFICULTY_META } from '../opponents/types';
 import { useChessGame, type GameOutcome } from '../game/useChessGame';
 import { useClock, formatClock } from '../game/useClock';
 import { pickRandomMove } from '../game/tempOpponent';
+import { gamePhase } from '../opponents/selection';
 import { useEngine } from '../engine/useEngine';
 import { ENGINE_FILENAME } from '../engine/StockfishEngine';
 import { materialFromFen } from '../utils/material';
@@ -108,7 +109,7 @@ export function GameScreen({
     const movetimeMs = Math.max(200, Math.min(opponent.config.searchTimeMs, 3000));
 
     (async () => {
-      let parsed = await engine.requestMove({ fen, skill: opponent.config.engineSkill, movetimeMs });
+      const parsed = await engine.requestPersonalityMove({ fen, config: opponent.config, movetimeMs });
       if (cancelled) return;
       // Validate the engine move against the current position; fall back if needed.
       let applied = parsed ? game.applyMove(parsed) : null;
@@ -134,8 +135,11 @@ export function GameScreen({
     }
     if (game.inCheck && game.turn === playerColor) return pick(opponent.dialogue.check) ?? opponent.signatureLine;
     if (game.plyCount === 0) return pick(opponent.dialogue.gameStart) ?? opponent.signatureLine;
+    if (game.plyCount >= 16 && gamePhase(game.fen) === 'endgame') {
+      return pick(opponent.dialogue.enterEndgame) ?? opponent.signatureLine;
+    }
     return opponent.signatureLine;
-  }, [isOver, ended, oppColor, playerColor, game.inCheck, game.turn, game.plyCount, opponent]);
+  }, [isOver, ended, oppColor, playerColor, game.inCheck, game.turn, game.plyCount, game.fen, opponent]);
 
   const movesEndRef = useRef<HTMLOListElement>(null);
   useEffect(() => {

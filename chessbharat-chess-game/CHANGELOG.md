@@ -3,6 +3,38 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.4.0] — Phase 4: Opponents (personality move selection)
+
+### Added
+- **MultiPV search** in the engine wrapper: ranked candidate moves with
+  centipawn/mate scores, so a personality layer can choose among reasonable
+  options.
+- **Personality selection layer** (`opponents/selection.ts`): per-candidate
+  feature enrichment (capture, captured value, check, castle, promotion,
+  centrality, development) via chess.js; game-phase classification; and a
+  move-selection policy driven by each opponent's config (aggression,
+  tactical/positional/sacrifice/endgame preferences, risk tolerance). Strong
+  players play objectively; others weight the engine's eval against personality
+  appeal within a risk-scaled eval window.
+- **Beginner mistake model** (200–900): controlled, plausible errors drawn from
+  the ranked candidate list (never random moves), with frequency and severity
+  scaled per opponent.
+- Opponent moves now flow through MultiPV + selection + Stockfish Skill Level,
+  so the 11 opponents differ in behaviour, not just name/portrait/dialogue.
+- Contextual dialogue extended with an endgame trigger.
+
+### Tested
+- 8 new unit tests for the selection layer (34 total, all pass).
+- **Calibration harness** (`calibration/`): measured eval-loss (ACPL) and
+  blunder rate per opponent over fixed positions. Results show a clear
+  monotonic trend (beginners ACPL ≈ 44 cp, experts ≈ 0 cp). See TEST-REPORT.md
+  for the table, method, sample sizes and honest caveats (proxy, not Elo).
+
+### Known limitations
+- Ratings are **target labels**, refined with larger samples in Phase 6.
+- Opening repertoires influence play via style bias + engine, not yet a full
+  named-opening book.
+
 ## [0.3.0] — Phase 3: Stockfish engine
 
 ### Added
