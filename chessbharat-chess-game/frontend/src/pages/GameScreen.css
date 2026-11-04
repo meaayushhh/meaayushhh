@@ -27,6 +27,16 @@
 }
 .chessbharat-game .cb-board-stage { position: relative; }
 
+/* ---- Engine error banner ------------------------------------------------ */
+.chessbharat-game .cb-engine-error {
+  padding: var(--cb-space-3) var(--cb-space-4);
+  border: 1px solid rgba(255, 106, 92, 0.5);
+  background: rgba(255, 106, 92, 0.1);
+  border-radius: var(--cb-radius-sm);
+  color: var(--cb-danger);
+  font-size: var(--cb-fs-sm);
+}
+
 /* ---- Thinking label ----------------------------------------------------- */
 .chessbharat-game .cb-think__label { color: var(--cb-cyan); font-size: var(--cb-fs-sm); margin-left: 8px; vertical-align: middle; }
 

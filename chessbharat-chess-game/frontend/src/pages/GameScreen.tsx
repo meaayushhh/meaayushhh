@@ -8,6 +8,8 @@ import { DIFFICULTY_META } from '../opponents/types';
 import { useChessGame, type GameOutcome } from '../game/useChessGame';
 import { useClock, formatClock } from '../game/useClock';
 import { pickRandomMove } from '../game/tempOpponent';
+import { useEngine } from '../engine/useEngine';
+import { ENGINE_FILENAME } from '../engine/StockfishEngine';
 import { materialFromFen } from '../utils/material';
 import { playCue } from '../utils/sound';
 import { downloadPgn } from '../utils/pgn';
@@ -20,11 +22,13 @@ const CAP_GLYPH: Record<string, string> = { p: '♟', n: '♞', b: '♝', r: '�
 export function GameScreen({
   setup,
   portraitsBase,
+  engineBase,
   showCoordinatesDefault,
   onExit,
 }: {
   setup: GameSetup;
   portraitsBase: string;
+  engineBase: string;
   showCoordinatesDefault: boolean;
   onExit: () => void;
 }) {
@@ -32,6 +36,7 @@ export function GameScreen({
   const oppColor: PieceColor = playerColor === 'w' ? 'b' : 'w';
 
   const game = useChessGame();
+  const engine = useEngine(`${engineBase}${ENGINE_FILENAME}`);
   const [orientation, setOrientation] = useState<PieceColor>(playerColor);
   const [soundOn, setSoundOn] = useState(true);
   const [showCoords, setShowCoords] = useState(showCoordinatesDefault);
@@ -90,19 +95,31 @@ export function GameScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [manualEnd]);
 
-  // Temporary opponent (random legal move). Replaced by Stockfish in Phase 3.
+  // Opponent move: Stockfish searches the position; on any failure we fall
+  // back to a random legal move so the game never stalls. The engine's move is
+  // validated against the live position (applyMove returns null if illegal /
+  // superseded), which also enforces "a new position supersedes the search".
   useEffect(() => {
     if (isOver || game.promotion) return;
     if (game.turn === playerColor) return;
+    let cancelled = false;
     setThinking(true);
-    const legal = game.legalMoves();
-    const move = pickRandomMove(legal);
-    const delay = 420 + Math.random() * 520;
-    const t = setTimeout(() => {
-      setThinking(false);
-      if (move) game.applyMove(move);
-    }, delay);
-    return () => clearTimeout(t);
+    const fen = game.fen;
+    const movetimeMs = Math.max(200, Math.min(opponent.config.searchTimeMs, 3000));
+
+    (async () => {
+      let parsed = await engine.requestMove({ fen, skill: opponent.config.engineSkill, movetimeMs });
+      if (cancelled) return;
+      // Validate the engine move against the current position; fall back if needed.
+      let applied = parsed ? game.applyMove(parsed) : null;
+      if (!applied && !cancelled) {
+        const rnd = pickRandomMove(game.legalMoves());
+        if (rnd) applied = game.applyMove(rnd);
+      }
+      if (!cancelled) setThinking(false);
+    })();
+
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.turn, game.fen, isOver, game.promotion, playerColor]);
 
@@ -128,12 +145,13 @@ export function GameScreen({
   const startFresh = useCallback(() => {
     game.reset();
     resetClock();
+    engine.newGame();
     setManualEnd(null);
     setThinking(false);
     setStartedAt(Date.now());
     setEndedAt(null);
     prevPly.current = 0;
-  }, [game, resetClock]);
+  }, [game, resetClock, engine]);
 
   const moveCount = Math.ceil(game.plyCount / 2);
   const durationMs = (endedAt ?? Date.now()) - startedAt;
@@ -160,13 +178,22 @@ export function GameScreen({
             {thinking ? (
               <p className="cb-opp__say" aria-live="polite">
                 <span className="cb-think" aria-hidden="true"><i /><i /><i /></span>
-                <span className="cb-think__label">Thinking…</span>
+                <span className="cb-think__label">
+                  {engine.status === 'loading' ? 'Loading engine…' : 'Thinking…'}
+                </span>
               </p>
             ) : (
               <p className="cb-opp__say" aria-live="polite">“{dialogue}”</p>
             )}
           </div>
         </header>
+
+        {engine.status === 'error' && (
+          <p className="cb-engine-error" role="status">
+            The chess engine couldn’t load, so the opponent is playing basic fallback moves.
+            Check your connection and start a new game to try again.
+          </p>
+        )}
 
         <PlayerBar
           side={oppColor === 'w' ? 'White' : 'Black'}

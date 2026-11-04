@@ -4,7 +4,7 @@ Tags: chess, game, stockfish, board game, play chess
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,6 +46,11 @@ which is licensed under the GNU General Public License v3.0. See
 THIRD-PARTY-LICENSES.md for full notices and source information.
 
 == Changelog ==
+
+= 0.3.0 =
+* Phase 3: bundled Stockfish 19 Lite (single-threaded WASM) running in a Web
+  Worker over UCI, lazy-loaded with graceful failure fallback. Opponents now
+  play real engine moves (skill level + search time per opponent).
 
 = 0.2.0 =
 * Phase 2: full chess rules via chess.js (castling, en passant, promotion,

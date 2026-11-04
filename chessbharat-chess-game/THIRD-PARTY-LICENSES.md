@@ -4,9 +4,9 @@ This document inventories third-party software distributed with, or bundled
 into, the ChessBharat Chess Game plugin. It is maintained as components are
 added across build phases.
 
-> Status: **Phase 1.** The Stockfish engine files are integrated in **Phase 3**;
-> this document already records the verified plan for them so the licensing
-> approach is reviewable now. Nothing in `assets/engine/` is shipped yet.
+> Status: **Phase 3.** The Stockfish 19 Lite engine is now bundled in
+> `assets/engine/` and runs in a Web Worker. Its full GPL-3.0 license text and
+> upstream README are shipped alongside the binaries (see §3).
 
 ---
 
@@ -30,34 +30,51 @@ Vite, TypeScript, `@vitejs/plugin-react`, Vitest and type packages are used to
 compile the frontend and are **not** distributed in the plugin ZIP or loaded on
 the production server.
 
-## 3. Chess engine — Stockfish (planned, Phase 3)
+## 3. Chess engine — Stockfish (shipped)
 
 - **Component:** Stockfish 19 Lite, single-threaded WebAssembly build.
 - **Distribution source:** npm package [`stockfish`](https://www.npmjs.com/package/stockfish)
   **19.0.1** (the `nmrugg/stockfish.js` project,
-  <https://github.com/nmrugg/stockfish.js/>).
-- **Files to be shipped** in `assets/engine/`:
-  - `stockfish-19-lite-single.js` (Emscripten glue)
-  - `stockfish-19-lite-single.wasm` (~1.8 MB)
-- **License:** **GNU General Public License v3.0 (GPL-3.0)**.
-- **Verified:** package downloaded and inspected during Phase 0; the Lite-single
-  build requires no cross-origin isolation (COOP/COEP) headers. The full build
-  (`stockfish-19.wasm`, ~94.6 MB) is **not** shipped or loaded.
+  <https://github.com/nmrugg/stockfish.js/>), built from upstream Stockfish
+  (<https://github.com/official-stockfish/Stockfish>).
+- **Files shipped** in `assets/engine/`:
 
-### GPL-3.0 obligations (to be satisfied before the engine is shipped)
+  | File | Size | SHA-256 |
+  |---|---|---|
+  | `stockfish-19-lite-single.js` | 28,230 B | `ccb130d7ff29408531c47d859a49f91d59d4f482d05a53eb1a3231a4f624c91a` |
+  | `stockfish-19-lite-single.wasm` | 1,845,971 B | `ee4f115bdb2d32cadf96cada104a05b5ec257d7ad6f57582190b49bc71f096de` |
+  | `STOCKFISH-COPYING.txt` | GPL-3.0 full text | — |
+  | `STOCKFISH-README.md` | upstream usage/notes | — |
 
-1. Include the full text of the GPL-3.0 license in this repository.
-2. Reproduce Stockfish's copyright and attribution notices.
-3. Provide the **corresponding source** for the exact distributed engine build
-   (the upstream Stockfish source plus the `nmrugg/stockfish.js` wrapper), or a
-   written offer/link to it, alongside the binary.
-4. Record the exact version, file names, sizes and (where practical) checksums.
+- **License:** **GNU General Public License v3.0 (GPL-3.0)**. The full text is
+  shipped at `assets/engine/STOCKFISH-COPYING.txt`.
+- **Runtime:** runs in a classic Web Worker, driven over UCI. The Lite-single
+  build requires **no cross-origin isolation (COOP/COEP) headers**. The full
+  build (`stockfish-19.wasm`, ~94.6 MB) is **not** shipped or loaded.
+
+### GPL-3.0 obligations — status
+
+1. ✅ Full GPL-3.0 license text included (`assets/engine/STOCKFISH-COPYING.txt`).
+2. ✅ Stockfish attribution + upstream notes included (`STOCKFISH-README.md`).
+3. **Corresponding source:** the exact distributed build comes from `stockfish`
+   **19.0.1** on npm / the `nmrugg/stockfish.js` v19.0.1 release
+   (<https://github.com/nmrugg/stockfish.js/releases/tag/v19.0.1>), which builds
+   from upstream Stockfish source. This written offer + links constitute the
+   corresponding-source information; a source mirror can be bundled on request.
+4. ✅ Exact version, file names, sizes and SHA-256 checksums recorded above.
 
 > ⚠️ **Open legal question flagged for review.** Placing the GPL-3.0 engine in a
 > separate folder does not by itself determine the license obligations of the
-> surrounding plugin code. The distribution approach is documented here and
-> flagged for the maintainer / legal review before release. The plugin's own
-> code is licensed GPL-3.0-or-later, which is compatible.
+> surrounding plugin code. The plugin's own code is licensed GPL-3.0-or-later
+> (compatible). The distribution approach is documented here and flagged for
+> maintainer / legal review before public release.
+
+### Deployment note (for Cowork)
+
+The server must serve `.wasm` with the `application/wasm` MIME type and allow
+the Web Worker script to load. Modern WordPress hosts do this by default; some
+hardened hosts or security plugins block `.wasm`/worker files and may need a
+MIME/allow rule. This is covered in the deployment checklist.
 
 ---
 

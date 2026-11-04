@@ -43,6 +43,7 @@ export function App() {
           <GameScreen
             setup={setup}
             portraitsBase={config.portraitsBase}
+            engineBase={config.engineBase}
             showCoordinatesDefault={config.showCoordinates}
             onExit={exitToLobby}
           />

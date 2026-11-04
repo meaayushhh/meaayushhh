@@ -3,6 +3,41 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.3.0] — Phase 3: Stockfish engine
+
+### Added
+- Bundled **Stockfish 19 Lite (single-threaded WASM)** in `assets/engine/`
+  (`stockfish-19-lite-single.{js,wasm}`, ~1.85 MB) with its full GPL-3.0
+  license text and upstream README. No cross-origin isolation headers required.
+- `StockfishEngine` wrapper: classic Web Worker, UCI protocol, lazy-init with
+  handshake, fail-fast on worker error, search with movetime/skill, stale-search
+  supersession guard, `stop()`, `terminate()`, and bestmove validation/parsing.
+- `useEngine` hook: lifecycle management, `idle/loading/ready/error` status,
+  automatic restart of a crashed worker, worker teardown on unmount.
+- Game loop now uses the engine for opponent moves (search time and Stockfish
+  skill level driven per opponent), with the engine's move validated against the
+  live position before it is applied.
+- Graceful degradation: if the engine fails to load, a clear banner is shown and
+  the opponent falls back to legal moves so play never stalls. A "Loading
+  engine…" state shows during lazy init.
+
+### Tested
+- Unit: `parseBestMove` (normal, promotion, `(none)`/`0000`, malformed) — 4 new
+  tests (26 total, all pass).
+- Browser (Playwright): the engine loads in a real Web Worker and plays coherent
+  legal chess (e.g. 1.e4 e5 2.Nf3 Nf6 3.Bc4 Nxe4), responding in ~700 ms at The
+  Club Player's configured search time; first move ~1.3 s including lazy load.
+- Failure path (Playwright): a bad engine URL fails fast (~230 ms, no 15 s hang),
+  shows the error banner, and the game continues via the fallback. Zero console
+  errors in both paths.
+
+### Known limitations / next
+- Opponents currently differ by Stockfish **skill level + search time** only.
+  Full per-personality move selection (MultiPV candidate scoring, openings,
+  beginner mistake models, contextual dialogue) is **Phase 4**.
+- Mobile hardware benchmarking is recorded on desktop Chromium here; on-device
+  Android timing is gathered in Phase 4/6.
+
 ## [0.2.0] — Phase 2: Chessboard & rules
 
 ### Added
