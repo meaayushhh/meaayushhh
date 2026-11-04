@@ -4,7 +4,7 @@ Tags: chess, game, stockfish, board game, play chess
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,6 +46,11 @@ which is licensed under the GNU General Public License v3.0. See
 THIRD-PARTY-LICENSES.md for full notices and source information.
 
 == Changelog ==
+
+= 0.6.0 =
+* Phase 6: QA and packaging. Installable plugin ZIP (no server build step),
+  Cowork install guide, deployment checklist, known-limitations/SEO doc, and a
+  full green test pass.
 
 = 0.5.0 =
 * Phase 5: 11 original opponent portraits (consistent art direction, WebP,

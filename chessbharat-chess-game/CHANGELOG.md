@@ -3,6 +3,26 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.6.0] — Phase 6: QA & packaging
+
+### Added
+- **Installable plugin ZIP** (`chessbharat-chess-game.zip`) — standard
+  WordPress upload, no build tools required on the server. Excludes
+  `node_modules` and dev-only files; includes compiled assets, engine,
+  portraits and human-readable source.
+- `INSTALLATION-FOR-CLAUDE-COWORK.md` — 12-step install & verify guide with
+  troubleshooting.
+- `DEPLOYMENT-CHECKLIST.md` — pre-flight, environment, functional and isolation
+  checks.
+- `KNOWN-LIMITATIONS.md` — limitations, prioritised future recommendations, and
+  the documented SEO metadata (not auto-applied).
+
+### QA
+- Full suite green: production build clean, `tsc` typecheck passes, 34 Vitest
+  tests pass, PHP `php -l` passes on all files.
+- Engine, personality, gameplay and failure paths verified in a real browser
+  (Playwright). See TEST-REPORT.md.
+
 ## [0.5.0] — Phase 5: Full experience (portraits, polish)
 
 ### Added

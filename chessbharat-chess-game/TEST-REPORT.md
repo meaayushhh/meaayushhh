@@ -1,6 +1,24 @@
 # ChessBharat Chess Game — Test Report
 
-_Last updated: Phase 4 (v0.4.0). This report is appended as phases complete._
+_Last updated: Phase 6 (v0.6.0)._
+
+## 0. Packaging & final QA (Phase 6)
+
+- **Installable ZIP** `chessbharat-chess-game.zip` (~2.8 MB) builds from the
+  plugin folder, excludes `node_modules`/dev files, and contains the PHP
+  plugin, compiled `assets/dist`, the engine (`assets/engine`, 1.85 MB WASM +
+  GPL text), 11 portraits, human-readable source, and all docs. Installs via the
+  normal WordPress plugin uploader with **no build step on the server**.
+- **Final green pass:** production build clean, `tsc` typecheck passes, 34
+  Vitest tests pass, `php -l` passes on all PHP files.
+- Browser-verified (Playwright): real engine play, personality move selection,
+  special moves, result/resign, and the engine-failure fallback.
+- Install & verification steps for the live site: see
+  `INSTALLATION-FOR-CLAUDE-COWORK.md` and `DEPLOYMENT-CHECKLIST.md`.
+- Limitations & future work: see `KNOWN-LIMITATIONS.md`.
+
+---
+
 
 ## 1. Automated tests (Vitest)
 
