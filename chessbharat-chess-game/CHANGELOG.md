@@ -3,6 +3,15 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
+## [0.8.1] - Title auto-advance and player profile
+
+### Added
+- The title screen moves on to the roster by itself after eight seconds. Enter
+  or a tap still continues at once.
+- Player profile on the VS screen: a name (up to 16 characters, shown in the
+  arena), four chess-piece avatars, and an optional photo. The photo is read on
+  this device only and never uploaded.
+
 ## [0.8.0] - Tekken-style front end
 
 ### Changed

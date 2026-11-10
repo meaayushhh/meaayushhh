@@ -4,7 +4,7 @@ Tags: chess, game, stockfish, board game, play chess
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 0.8.0
+Stable tag: 0.8.1
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,6 +46,10 @@ which is licensed under the GNU General Public License v3.0. See
 THIRD-PARTY-LICENSES.md for full notices and source information.
 
 == Changelog ==
+
+= 0.8.1 =
+* Title screen moves on by itself; player name, avatar and optional photo
+  (kept on the device) on the VS screen.
 
 = 0.8.0 =
 * Tekken-style front end: title screen, fighter roster with a live bio panel,

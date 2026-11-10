@@ -46,12 +46,14 @@ export function GameScreen({
   engineBase,
   showCoordinatesDefault,
   onExit,
+  playerName = 'Player',
 }: {
   setup: GameSetup;
   portraitsBase: string;
   engineBase: string;
   showCoordinatesDefault: boolean;
   onExit: () => void;
+  playerName?: string;
 }) {
   const { opponent, timeControl, playerColor, casual } = setup;
   const oppColor: PieceColor = playerColor === 'w' ? 'b' : 'w';
@@ -279,7 +281,7 @@ export function GameScreen({
         </div>
 
         <PlayerBar
-          side={`You · ${playerColor === 'w' ? 'White' : 'Black'}`}
+          side={`${playerName} · ${playerColor === 'w' ? 'White' : 'Black'}`}
           clock={formatClock(baseMs == null ? null : playerClockMs)}
           active={!isOver && game.turn === playerColor}
           captured={playerCaptured}

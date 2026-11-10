@@ -6,6 +6,9 @@ import './Intro.css';
  * Title screen. The mark and wordmark assemble on entry, then the screen waits
  * for the player to press a key, click or tap, the way arcade title screens do.
  */
+/** How long the title waits before moving on by itself. */
+const AUTO_CONTINUE_MS = 8000;
+
 export function Intro({ onContinue }: { onContinue: () => void }) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -15,7 +18,12 @@ export function Intro({ onContinue }: { onContinue: () => void }) {
       }
     }
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    // Move on by itself after a while, so the title never blocks the game.
+    const timer = window.setTimeout(onContinue, AUTO_CONTINUE_MS);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.clearTimeout(timer);
+    };
   }, [onContinue]);
 
   const letters = 'CHESS'.split('');

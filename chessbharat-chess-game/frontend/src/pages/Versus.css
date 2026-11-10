@@ -161,3 +161,66 @@
 .chessbharat-game .cb-tc:hover:not(:disabled) { color: var(--cb-ink); border-color: var(--cb-line-strong); }
 .chessbharat-game .cb-tc.is-active { color: var(--cb-saffron-ink); background: var(--cb-saffron); border-color: var(--cb-saffron); }
 .chessbharat-game .cb-tc:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ---- Player profile: name, avatar, photo ------------------------------- */
+.chessbharat-game .cb-versus__you-mark { overflow: hidden; }
+.chessbharat-game .cb-versus__you-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.chessbharat-game .cb-versus__profile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--cb-space-4);
+}
+.chessbharat-game .cb-versus__name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.chessbharat-game .cb-versus__name-field span {
+  font-size: var(--cb-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cb-ink-faint);
+  font-weight: 600;
+}
+.chessbharat-game .cb-versus__name-field input {
+  min-height: 44px;
+  padding: 0 var(--cb-space-3);
+  border-radius: var(--cb-radius-sm);
+  border: 1px solid var(--cb-line-strong);
+  background: var(--cb-surface-2);
+  color: var(--cb-ink);
+  font: 600 var(--cb-fs-md) var(--cb-ff-ui);
+}
+.chessbharat-game .cb-versus__name-field input:focus-visible { outline: 2px solid var(--cb-focus); outline-offset: 2px; }
+
+.chessbharat-game .cb-versus__avatars { display: flex; gap: var(--cb-space-2); flex-wrap: wrap; }
+.chessbharat-game .cb-versus__avatar {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 1.7rem;
+  line-height: 1;
+  color: var(--cb-ink);
+  background: var(--cb-surface-2);
+  border: 1px solid var(--cb-line-strong);
+  border-radius: var(--cb-radius-sm);
+  cursor: pointer;
+  transition: border-color 160ms var(--cb-ease), background-color 160ms var(--cb-ease);
+}
+.chessbharat-game .cb-versus__avatar:hover { background: var(--cb-surface-3); }
+.chessbharat-game .cb-versus__avatar.is-active { border-color: var(--cb-saffron); box-shadow: var(--cb-ring-saffron); }
+.chessbharat-game .cb-versus__avatar--photo { font-size: 1.4rem; color: var(--cb-ink-dim); }
+.chessbharat-game .cb-versus__avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.chessbharat-game .cb-versus__hint {
+  margin: var(--cb-space-2) 0 0;
+  font-size: var(--cb-fs-xs);
+  color: var(--cb-ink-faint);
+}

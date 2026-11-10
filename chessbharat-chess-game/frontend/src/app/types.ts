@@ -16,6 +16,22 @@ export interface GameSetup {
   casual: boolean;
 }
 
+/** The four chess-piece avatars a player can pick without uploading anything. */
+export type PresetKey = 'king' | 'queen' | 'knight' | 'rook';
+
+/** A preset, or a photo the player chose on this device (never uploaded). */
+export type AvatarChoice = { kind: 'preset'; key: PresetKey } | { kind: 'photo'; src: string };
+
+export interface PlayerProfile {
+  name: string;
+  avatar: AvatarChoice;
+}
+
+export const DEFAULT_PROFILE: PlayerProfile = {
+  name: 'Player',
+  avatar: { kind: 'preset', key: 'king' },
+};
+
 export type GameResult =
   | { kind: 'win'; reason: string }
   | { kind: 'loss'; reason: string }

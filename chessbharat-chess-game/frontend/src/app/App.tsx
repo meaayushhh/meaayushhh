@@ -5,7 +5,7 @@ import { Roster } from '../pages/Roster';
 import { Versus } from '../pages/Versus';
 import { GameScreen } from '../pages/GameScreen';
 import { getConfig } from './config';
-import type { GameSetup, Screen } from './types';
+import { DEFAULT_PROFILE, type GameSetup, type PlayerProfile, type Screen } from './types';
 import type { Opponent } from '../opponents/types';
 import './App.css';
 
@@ -14,6 +14,7 @@ export function App() {
   const [screen, setScreen] = useState<Screen>('intro');
   const [chosen, setChosen] = useState<Opponent | null>(null);
   const [setup, setSetup] = useState<GameSetup | null>(null);
+  const [profile, setProfile] = useState<PlayerProfile>(DEFAULT_PROFILE);
 
   const toRoster = useCallback(() => {
     setSetup(null);
@@ -62,6 +63,8 @@ export function App() {
           <Versus
             opponent={chosen}
             portraitsBase={config.portraitsBase}
+            profile={profile}
+            onProfileChange={setProfile}
             onBack={toRoster}
             onFight={onFight}
           />
@@ -73,6 +76,7 @@ export function App() {
             portraitsBase={config.portraitsBase}
             engineBase={config.engineBase}
             showCoordinatesDefault={config.showCoordinates}
+            playerName={profile.name.trim() || 'Player'}
             onExit={toRoster}
           />
         )}
