@@ -41,7 +41,7 @@ Vite, TypeScript, `@vitejs/plugin-react`, Vitest and type packages are used to
 compile the frontend and are **not** distributed in the plugin ZIP or loaded on
 the production server.
 
-## 3. Chess engine — Stockfish (shipped)
+## 3. Chess engine - Stockfish (shipped)
 
 - **Component:** Stockfish 19 Lite, single-threaded WebAssembly build.
 - **Distribution source:** npm package [`stockfish`](https://www.npmjs.com/package/stockfish)
@@ -54,8 +54,8 @@ the production server.
   |---|---|---|
   | `stockfish-19-lite-single.js` | 28,230 B | `ccb130d7ff29408531c47d859a49f91d59d4f482d05a53eb1a3231a4f624c91a` |
   | `stockfish-19-lite-single.wasm` | 1,845,971 B | `ee4f115bdb2d32cadf96cada104a05b5ec257d7ad6f57582190b49bc71f096de` |
-  | `STOCKFISH-COPYING.txt` | GPL-3.0 full text | — |
-  | `STOCKFISH-README.md` | upstream usage/notes | — |
+  | `STOCKFISH-COPYING.txt` | GPL-3.0 full text | - |
+  | `STOCKFISH-README.md` | upstream usage/notes | - |
 
 - **License:** **GNU General Public License v3.0 (GPL-3.0)**. The full text is
   shipped at `assets/engine/STOCKFISH-COPYING.txt`.
@@ -63,7 +63,7 @@ the production server.
   build requires **no cross-origin isolation (COOP/COEP) headers**. The full
   build (`stockfish-19.wasm`, ~94.6 MB) is **not** shipped or loaded.
 
-### GPL-3.0 obligations — status
+### GPL-3.0 obligations - status
 
 1. ✅ Full GPL-3.0 license text included (`assets/engine/STOCKFISH-COPYING.txt`).
 2. ✅ Stockfish attribution + upstream notes included (`STOCKFISH-README.md`).

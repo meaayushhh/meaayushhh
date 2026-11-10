@@ -1,0 +1,119 @@
+/* ==========================================================================
+   Title screen. Assembles on entry, then waits for a press.
+   ========================================================================== */
+
+.chessbharat-game .cb-intro {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: min(82dvh, 720px);
+  padding: var(--cb-space-7) var(--cb-gutter);
+  background: radial-gradient(ellipse at 50% 42%, #16201a 0%, var(--cb-bg) 62%);
+  border: 0;
+  color: var(--cb-ink);
+  cursor: pointer;
+  overflow: hidden;
+  text-align: center;
+}
+.chessbharat-game .cb-intro:focus-visible { outline: 2px solid var(--cb-focus); outline-offset: -6px; }
+
+.chessbharat-game .cb-intro__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cb-space-4);
+}
+
+/* Logo rises and settles, like a badge being placed on the screen. */
+.chessbharat-game .cb-intro__mark {
+  animation: cb-intro-rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.chessbharat-game .cb-intro__mark .cb-mark {
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.55));
+}
+
+/* Wordmark letters drop in one by one. */
+.chessbharat-game .cb-intro__title {
+  margin: 0;
+  font-family: var(--cb-ff-display);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 8vw, 5.6rem);
+  line-height: 0.95;
+  letter-spacing: 0.12em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.chessbharat-game .cb-intro__word { display: inline-flex; }
+.chessbharat-game .cb-intro__word--accent { color: var(--cb-saffron); }
+.chessbharat-game .cb-intro__word span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-18px);
+  animation: cb-intro-letter 520ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+/* A thin rule that draws out from the centre. */
+.chessbharat-game .cb-intro__rule {
+  display: block;
+  width: min(260px, 60vw);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cb-saffron), transparent);
+  transform: scaleX(0);
+  animation: cb-intro-rule 700ms 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.chessbharat-game .cb-intro__tagline {
+  margin: 0;
+  color: var(--cb-ink-dim);
+  font-size: var(--cb-fs-md);
+  letter-spacing: 0.04em;
+  opacity: 0;
+  animation: cb-fade-in 600ms 1.9s ease forwards;
+}
+
+/* The prompt breathes slowly, the way arcade title screens do. */
+.chessbharat-game .cb-intro__press {
+  margin: var(--cb-space-5) 0 0;
+  font-family: var(--cb-ff-display);
+  font-weight: 600;
+  font-size: var(--cb-fs-base);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cb-saffron-soft);
+  opacity: 0;
+  animation: cb-fade-in 500ms 2.4s ease forwards, cb-breathe 2.6s 2.9s ease-in-out infinite;
+}
+
+@keyframes cb-intro-rise {
+  from { opacity: 0; transform: translateY(24px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cb-intro-letter {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cb-intro-rule {
+  to { transform: scaleX(1); }
+}
+@keyframes cb-fade-in {
+  to { opacity: 1; }
+}
+@keyframes cb-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chessbharat-game .cb-intro *,
+  .chessbharat-game .cb-intro__word span,
+  .chessbharat-game .cb-intro__rule,
+  .chessbharat-game .cb-intro__tagline,
+  .chessbharat-game .cb-intro__press {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .chessbharat-game .cb-intro__rule { transform: scaleX(1) !important; }
+}

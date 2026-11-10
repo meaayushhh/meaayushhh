@@ -1,8 +1,8 @@
-# Installation Guide — for Claude Cowork
+# Installation Guide - for Claude Cowork
 
 This guide is for **installing and verifying** the packaged ChessBharat Chess
 Game plugin on the live WordPress site. **Do not rewrite the plugin's code or
-make unreviewed changes** — install the packaged ZIP and verify it.
+make unreviewed changes** - install the packaged ZIP and verify it.
 
 The plugin is self-contained: it ships compiled frontend assets and the chess
 engine, so **no Node.js, npm, or build step is required on the server.**
@@ -29,7 +29,7 @@ engine, so **no Node.js, npm, or build step is required on the server.**
 - Confirm at least ~10 MB free for the plugin (engine WASM is ~1.85 MB).
 - Confirm the server serves `.wasm` as `application/wasm` and allows Web Workers.
   Most modern hosts do. If the engine fails to load after install (see step 8),
-  this is the likely cause — see **Troubleshooting**.
+  this is the likely cause - see **Troubleshooting**.
 
 ## 3. Back up the website & database
 
@@ -116,7 +116,7 @@ engine, so **no Node.js, npm, or build step is required on the server.**
 
 **Portraits don't appear.**
 - Confirm `assets/portraits/*.webp` returns 200. The UI falls back to neutral
-  initials if an image is missing — not fatal.
+  initials if an image is missing - not fatal.
 
 **Styling looks off only inside the game.**
 - Confirm `chessbharat.css` loaded. All game styles are scoped under

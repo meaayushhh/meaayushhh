@@ -1,24 +1,40 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Logo } from '../components/Logo';
-import { Lobby } from '../pages/Lobby';
+import { Intro } from '../pages/Intro';
+import { Roster } from '../pages/Roster';
+import { Versus } from '../pages/Versus';
 import { GameScreen } from '../pages/GameScreen';
 import { getConfig } from './config';
 import type { GameSetup, Screen } from './types';
+import type { Opponent } from '../opponents/types';
 import './App.css';
 
 export function App() {
   const config = getConfig();
-  const [screen, setScreen] = useState<Screen>('lobby');
+  const [screen, setScreen] = useState<Screen>('intro');
+  const [chosen, setChosen] = useState<Opponent | null>(null);
   const [setup, setSetup] = useState<GameSetup | null>(null);
 
-  function startGame(next: GameSetup) {
+  const toRoster = useCallback(() => {
+    setSetup(null);
+    setScreen('roster');
+  }, []);
+
+  const toIntro = useCallback(() => {
+    setSetup(null);
+    setChosen(null);
+    setScreen('intro');
+  }, []);
+
+  const onFoeChosen = useCallback((o: Opponent) => {
+    setChosen(o);
+    setScreen('versus');
+  }, []);
+
+  const onFight = useCallback((next: GameSetup) => {
     setSetup(next);
     setScreen('game');
-  }
-  function exitToLobby() {
-    setSetup(null);
-    setScreen('lobby');
-  }
+  }, []);
 
   return (
     <div className="cb-app">
@@ -27,8 +43,8 @@ export function App() {
         <button
           type="button"
           className="cb-topbar__brand"
-          onClick={exitToLobby}
-          aria-label="ChessBharat, back to opponent selection"
+          onClick={toIntro}
+          aria-label="ChessBharat, back to the title screen"
         >
           <Logo size={34} />
         </button>
@@ -36,16 +52,28 @@ export function App() {
       </header>
 
       <main id="cb-main">
-        {screen === 'lobby' && (
-          <Lobby portraitsBase={config.portraitsBase} onStart={startGame} />
+        {screen === 'intro' && <Intro onContinue={() => setScreen('roster')} />}
+
+        {screen === 'roster' && (
+          <Roster portraitsBase={config.portraitsBase} onSelect={onFoeChosen} />
         )}
+
+        {screen === 'versus' && chosen && (
+          <Versus
+            opponent={chosen}
+            portraitsBase={config.portraitsBase}
+            onBack={toRoster}
+            onFight={onFight}
+          />
+        )}
+
         {screen === 'game' && setup && (
           <GameScreen
             setup={setup}
             portraitsBase={config.portraitsBase}
             engineBase={config.engineBase}
             showCoordinatesDefault={config.showCoordinates}
-            onExit={exitToLobby}
+            onExit={toRoster}
           />
         )}
       </main>

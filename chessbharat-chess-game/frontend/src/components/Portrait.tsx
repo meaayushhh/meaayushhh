@@ -18,7 +18,7 @@ export function Portrait({
   opponent: Opponent;
   /** Base URL of assets/portraits/ (injected by WP). Empty in dev = placeholder. */
   imageBase?: string;
-  size?: 'card' | 'header' | 'result';
+  size?: 'card' | 'header' | 'result' | 'bio';
 }) {
   const [failed, setFailed] = useState(false);
   const initials = opponent.name

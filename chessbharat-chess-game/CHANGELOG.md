@@ -3,7 +3,24 @@
 All notable changes to the ChessBharat Chess Game plugin are documented here.
 This project follows a phased build; each phase is kept buildable.
 
-## [0.7.1] — Standalone offline build
+## [0.8.0] - Tekken-style front end
+
+### Changed
+- New screen flow modelled on a classic fighting-game front end:
+  title screen (assembles on entry, waits for Enter or tap) -> fighter roster
+  -> VS match setup -> round-start banner into the arena.
+- Roster: a grid of the eleven opponents. Moving the cursor (mouse, touch or
+  arrow keys) updates a bio panel with portrait, rating, bio, what the fighter
+  teaches, weak spot and openings. Select with a click on the highlighted
+  fighter, Enter, or the Select button.
+- VS screen: both fighters slide in from their sides, the VS mark lands, and
+  the clock and colour are set before "Enter the arena".
+- Opponent lines still appear only once the game has started.
+
+### Removed
+- The old single-page opponent lobby.
+
+## [0.7.1] - Standalone offline build
 
 ### Added
 - A single-file **offline build** (`play-chessbharat.html`, ~3.2 MB): the whole
@@ -14,7 +31,7 @@ This project follows a phased build; each phase is kept buildable.
   runtime config, and an optional pre-built engine worker URL. Neither changes
   WordPress plugin behaviour.
 
-## [0.7.0] — Identity, pacing & copy
+## [0.7.0] - Identity, pacing & copy
 
 ### Changed
 - **Typography:** the game now uses **League Spartan** (display) and **Barlow**
@@ -37,12 +54,12 @@ This project follows a phased build; each phase is kept buildable.
 - Em dashes removed from all in-game copy (and source), per house style; the
   unlimited clock now shows an infinity symbol.
 
-## [0.6.1] — Brand & board polish
+## [0.6.1] - Brand & board polish
 
 ### Changed
 - **Brand logo:** the header now uses the ChessBharat tricolour horse-head logo
   (bundled via Vite; resolves correctly under the plugin path).
-- **Board presentation:** physical, slightly-3D look — a beveled stone frame, a
+- **Board presentation:** physical, slightly-3D look - a beveled stone frame, a
   recessed playing well, subtle per-square shading, grounded contact shadows
   under pieces, and a restrained warm ambient glow (brand palette, not neon).
 - **Realistic animations:** pieces slide from origin to destination on each move
@@ -55,18 +72,18 @@ This project follows a phased build; each phase is kept buildable.
   correctly when the plugin is served from `/wp-content/plugins/...` rather than
   the site root.
 
-## [0.6.0] — Phase 6: QA & packaging
+## [0.6.0] - Phase 6: QA & packaging
 
 ### Added
-- **Installable plugin ZIP** (`chessbharat-chess-game.zip`) — standard
+- **Installable plugin ZIP** (`chessbharat-chess-game.zip`) - standard
   WordPress upload, no build tools required on the server. Excludes
   `node_modules` and dev-only files; includes compiled assets, engine,
   portraits and human-readable source.
-- `INSTALLATION-FOR-CLAUDE-COWORK.md` — 12-step install & verify guide with
+- `INSTALLATION-FOR-CLAUDE-COWORK.md` - 12-step install & verify guide with
   troubleshooting.
-- `DEPLOYMENT-CHECKLIST.md` — pre-flight, environment, functional and isolation
+- `DEPLOYMENT-CHECKLIST.md` - pre-flight, environment, functional and isolation
   checks.
-- `KNOWN-LIMITATIONS.md` — limitations, prioritised future recommendations, and
+- `KNOWN-LIMITATIONS.md` - limitations, prioritised future recommendations, and
   the documented SEO metadata (not auto-applied).
 
 ### QA
@@ -75,7 +92,7 @@ This project follows a phased build; each phase is kept buildable.
 - Engine, personality, gameplay and failure paths verified in a real browser
   (Playwright). See TEST-REPORT.md.
 
-## [0.5.0] — Phase 5: Full experience (portraits, polish)
+## [0.5.0] - Phase 5: Full experience (portraits, polish)
 
 ### Added
 - **11 original opponent portraits** generated with one consistent art
@@ -93,7 +110,7 @@ This project follows a phased build; each phase is kept buildable.
 - Opponent selection, full gameplay, clocks, controls, results and PGN export
   were completed in Phases 1–4; this phase adds the final artwork and polish.
 
-## [0.4.0] — Phase 4: Opponents (personality move selection)
+## [0.4.0] - Phase 4: Opponents (personality move selection)
 
 ### Added
 - **MultiPV search** in the engine wrapper: ranked candidate moves with
@@ -125,7 +142,7 @@ This project follows a phased build; each phase is kept buildable.
 - Opening repertoires influence play via style bias + engine, not yet a full
   named-opening book.
 
-## [0.3.0] — Phase 3: Stockfish engine
+## [0.3.0] - Phase 3: Stockfish engine
 
 ### Added
 - Bundled **Stockfish 19 Lite (single-threaded WASM)** in `assets/engine/`
@@ -144,7 +161,7 @@ This project follows a phased build; each phase is kept buildable.
   engine…" state shows during lazy init.
 
 ### Tested
-- Unit: `parseBestMove` (normal, promotion, `(none)`/`0000`, malformed) — 4 new
+- Unit: `parseBestMove` (normal, promotion, `(none)`/`0000`, malformed) - 4 new
   tests (26 total, all pass).
 - Browser (Playwright): the engine loads in a real Web Worker and plays coherent
   legal chess (e.g. 1.e4 e5 2.Nf3 Nf6 3.Bc4 Nxe4), responding in ~700 ms at The
@@ -160,7 +177,7 @@ This project follows a phased build; each phase is kept buildable.
 - Mobile hardware benchmarking is recorded on desktop Chromium here; on-device
   Android timing is gathered in Phase 4/6.
 
-## [0.2.0] — Phase 2: Chessboard & rules
+## [0.2.0] - Phase 2: Chessboard & rules
 
 ### Added
 - Integrated `chess.js` as the single rules engine via a `useChessGame` hook:
@@ -179,7 +196,7 @@ This project follows a phased build; each phase is kept buildable.
 - **Result screen**: win/loss/draw with reason, move count, duration, PGN
   download, play again, choose another opponent.
 - Working controls: New Game, Resign, Offer Draw, Undo (casual only), Flip,
-  Sound (synthesized move/capture/check/end cues), Settings — all confirmed
+  Sound (synthesized move/capture/check/end cues), Settings - all confirmed
   for destructive actions; no dead buttons.
 - Temporary random-legal opponent so a full game is playable end-to-end for
   rules verification. **This is a placeholder**, replaced by Stockfish
@@ -200,7 +217,7 @@ This project follows a phased build; each phase is kept buildable.
   decisions arrive in Phase 4).
 - Clock accuracy during backgrounded tabs / device sleep is hardened in Phase 5.
 
-## [0.1.0] — Phase 1: Foundation & visual prototype
+## [0.1.0] - Phase 1: Foundation & visual prototype
 
 ### Added
 - WordPress plugin scaffold: bootstrap, `Plugin` orchestrator, `Assets`
@@ -221,7 +238,7 @@ This project follows a phased build; each phase is kept buildable.
   selected state, detail + setup dialog, time-control selection (with the
   Calculator's classical-only restriction), and colour choice.
 - Custom SVG/CSS chessboard with one cohesive piece set, coordinates, and
-  last-move / selected / check / legal-move visual states — no externally
+  last-move / selected / check / legal-move visual states - no externally
   hosted images.
 - Game-screen prototype: opponent header, player/opponent bars with clocks and
   captured pieces, move history, grouped controls, and confirm dialogs for

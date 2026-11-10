@@ -1,4 +1,4 @@
-# ChessBharat Chess Game — Test Report
+# ChessBharat Chess Game - Test Report
 
 _Last updated: Phase 6 (v0.6.0)._
 
@@ -73,7 +73,7 @@ the engine's best (ACPL proxy) and the **blunder rate** (choices losing
   personality layer makes opponents behave differently, not just look
   different: beginners drift from the engine's best move, experts do not.
 - The Positional Master and Endgame Specialist show a *slightly* higher ACPL
-  than their neighbours **by design** — they accept small objective eval loss
+  than their neighbours **by design** - they accept small objective eval loss
   for structure / favourable simplification, which the ACPL metric counts as
   "loss." This is the personality layer working as intended, not weakness.
 - **This is a proxy, not an Elo rating.** The harness measures only the
@@ -82,7 +82,7 @@ the engine's best (ACPL proxy) and the **blunder rate** (choices losing
   **short, shallow search** (200–700 ms), so their effective strength is lower
   than the ACPL proxy alone suggests. The blunder rate understates real
   blunders because these 8 positions are relatively quiet; sharper positions
-  produce more mistakes. Sample sizes are small — treat ratings as **target
+  produce more mistakes. Sample sizes are small - treat ratings as **target
   labels**, to be refined with larger full-game samples in Phase 6.
 
 Reproduce: `frontend/src/calibration/calibrate.ts` via `calibration.html`

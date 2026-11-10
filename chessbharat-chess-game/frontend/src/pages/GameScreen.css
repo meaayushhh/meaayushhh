@@ -200,3 +200,56 @@
 }
 .chessbharat-game .cb-toggle { display: flex; align-items: center; gap: var(--cb-space-3); cursor: pointer; font-size: var(--cb-fs-sm); }
 .chessbharat-game .cb-toggle input { width: 18px; height: 18px; accent-color: var(--cb-saffron); }
+
+/* ---- Round-start banner ------------------------------------------------- */
+.chessbharat-game .cb-game { position: relative; }
+.chessbharat-game .cb-round {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, rgba(5, 7, 6, 0.78) 22%, rgba(5, 7, 6, 0.78) 78%, transparent 100%);
+  animation: cb-round-fade 1500ms var(--cb-ease) both;
+}
+.chessbharat-game .cb-round__kicker {
+  font-family: var(--cb-ff-display);
+  font-weight: 600;
+  font-size: var(--cb-fs-md);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cb-ink-dim);
+  animation: cb-round-slide 620ms var(--cb-ease) both;
+}
+.chessbharat-game .cb-round__word {
+  font-family: var(--cb-ff-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  line-height: 1;
+  color: var(--cb-saffron);
+  letter-spacing: 0.04em;
+  animation: cb-round-slam 720ms var(--cb-ease) both;
+}
+@keyframes cb-round-fade {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  78% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes cb-round-slide {
+  from { opacity: 0; letter-spacing: 0.6em; }
+  to { opacity: 1; letter-spacing: 0.3em; }
+}
+@keyframes cb-round-slam {
+  0% { opacity: 0; transform: scale(1.5); }
+  60% { opacity: 1; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chessbharat-game .cb-round,
+  .chessbharat-game .cb-round * { animation: none !important; }
+}

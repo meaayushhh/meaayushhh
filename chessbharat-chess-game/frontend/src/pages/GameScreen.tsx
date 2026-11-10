@@ -58,6 +58,13 @@ export function GameScreen({
 
   const game = useChessGame();
   const engine = useEngine(`${engineBase}${ENGINE_FILENAME}`);
+
+  // Round-start banner: a brief, non-blocking "Round one / Begin" card on entry.
+  const [showRound, setShowRound] = useState(true);
+  useEffect(() => {
+    const t = window.setTimeout(() => setShowRound(false), 1500);
+    return () => window.clearTimeout(t);
+  }, []);
   const [orientation, setOrientation] = useState<PieceColor>(playerColor);
   const [soundOn, setSoundOn] = useState(true);
   const [showCoords, setShowCoords] = useState(showCoordinatesDefault);
@@ -200,6 +207,12 @@ export function GameScreen({
 
   return (
     <section className="cb-game" aria-label={`Game against ${opponent.name}`}>
+      {showRound && (
+        <div className="cb-round" aria-hidden="true">
+          <span className="cb-round__kicker">Round one</span>
+          <b className="cb-round__word">Begin</b>
+        </div>
+      )}
       <div className="cb-game__main">
         <header className="cb-opp" aria-label="Opponent">
           <Portrait opponent={opponent} imageBase={portraitsBase} size="header" />

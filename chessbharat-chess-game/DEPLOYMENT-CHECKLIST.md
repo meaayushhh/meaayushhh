@@ -4,7 +4,7 @@ A compact pre-flight and post-deploy checklist for the ChessBharat Chess Game
 plugin. Full step-by-step instructions are in
 `INSTALLATION-FOR-CLAUDE-COWORK.md`.
 
-## Pre-flight (build/package — already done for the shipped ZIP)
+## Pre-flight (build/package - already done for the shipped ZIP)
 
 - [x] Production frontend build committed to `assets/dist/`
       (`chessbharat.js`, `chessbharat.css`).

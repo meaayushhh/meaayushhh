@@ -45,7 +45,7 @@ class Rest_Api {
 	}
 
 	/**
-	 * Status endpoint — confirms the plugin is active and reports version.
+	 * Status endpoint - confirms the plugin is active and reports version.
 	 *
 	 * @return \WP_REST_Response
 	 */

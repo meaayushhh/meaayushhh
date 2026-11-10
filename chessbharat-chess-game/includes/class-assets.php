@@ -3,7 +3,7 @@
  * Asset registration and conditional enqueueing.
  *
  * Assets are REGISTERED on wp_enqueue_scripts but only ENQUEUED when the
- * [chessbharat_game] shortcode actually renders — so ordinary ChessBharat
+ * [chessbharat_game] shortcode actually renders - so ordinary ChessBharat
  * pages never load the game's script, styles or engine.
  *
  * @package ChessBharat\ChessGame

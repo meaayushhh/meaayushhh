@@ -40,7 +40,7 @@
 7. **Bespoke vector piece set** as an alternative to the current cohesive
    Unicode-glyph set.
 
-## SEO metadata (document only — do NOT apply automatically)
+## SEO metadata (document only - do NOT apply automatically)
 
 Provide these to the site administrator / Cowork to set via the existing SEO
 plugin (e.g. Rank Math). The plugin itself does not modify SEO settings.

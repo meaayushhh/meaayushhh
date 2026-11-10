@@ -2,7 +2,11 @@ import type { PieceColor } from '../utils/fen';
 import type { Opponent } from '../opponents/types';
 import type { TimeControl } from '../data/timeControls';
 
-export type Screen = 'lobby' | 'game' | 'result';
+/**
+ * Screen flow, modelled on a classic fighting-game front end:
+ * title -> roster (pick a fighter, bio shown) -> versus (set the match) -> arena.
+ */
+export type Screen = 'intro' | 'roster' | 'versus' | 'game';
 
 export interface GameSetup {
   opponent: Opponent;

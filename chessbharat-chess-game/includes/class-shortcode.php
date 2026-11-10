@@ -41,7 +41,7 @@ class Shortcode {
 	public function render( $atts ): string {
 		$atts = shortcode_atts(
 			array(
-				'coordinates' => '', // '', 'on' or 'off' — overrides the setting.
+				'coordinates' => '', // '', 'on' or 'off' - overrides the setting.
 			),
 			$atts,
 			self::TAG
@@ -66,7 +66,7 @@ class Shortcode {
 		$intro = apply_filters(
 			'chessbharat_cg_intro_html',
 			'<p class="chessbharat-game-intro">'
-			. esc_html__( 'Play chess online against 11 unique computer opponents. Choose your difficulty, challenge different playing styles and improve your chess skills — right here in your browser, free.', 'chessbharat-chess-game' )
+			. esc_html__( 'Play chess online against 11 unique computer opponents. Choose your difficulty, challenge different playing styles and improve your chess skills - right here in your browser, free.', 'chessbharat-chess-game' )
 			. '</p>'
 		);
 
